@@ -2,7 +2,7 @@
 
 <html lang="cs">
 <head>
-<meta name="tc-build" content="0.7.0-clean-darts">
+<meta name="tc-build" content="0.8.0-darts-deploy-fix">
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="#080402" name="theme-color"/>
@@ -1671,16 +1671,8 @@ window.addEventListener("message",e=>{
 
 </script>
 <script>
-/* v0.7 cache reset: prevents an old GitHub Pages service worker from serving stale index.html */
 if("serviceWorker" in navigator){
- window.addEventListener("load",async()=>{
-  try{
-   const regs=await navigator.serviceWorker.getRegistrations();
-   await Promise.all(regs.map(r=>r.unregister()));
-   const keys=await caches.keys();
-   await Promise.all(keys.map(k=>caches.delete(k)));
-  }catch(e){}
- });
+ window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=080",{updateViaCache:"none"}).catch(()=>{}));
 }
 </script>
 </body></html>
