@@ -2,7 +2,7 @@
 
 <html lang="cs">
 <head>
-<meta name="tc-build" content="0.6.1-darts-visible">
+<meta name="tc-build" content="0.7.0-clean-darts">
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="#080402" name="theme-color"/>
@@ -1443,7 +1443,6 @@ $("#fsArtHit").onclick=async()=>{
  }catch(e){}
 };
 
-
 function openExactCategory(cat){
  const x=EXACT_MENU_TXT[lang];
  $("#menu").classList.remove("active");
@@ -1455,7 +1454,6 @@ function openExactCategory(cat){
    <button id="go30Exact" class="catGameExact"><strong>30</strong><span>${lang==="cs"?"Souboj o poslední život":"Last life standing"}</span></button>`;
   $("#go10kExact").onclick=()=>openLocked10K();
   $("#go30Exact").onclick=()=>openGame30();
- 
  }else if(cat==="darts"){
   $("#catGamesExact").innerHTML=`
    <button id="goDarts1Exact" class="catGameExact"><strong>1</strong><span>${lang==="cs"?"Master Out – šipky":"Master Out – darts"}</span></button>`;
@@ -1602,26 +1600,22 @@ window.addEventListener("message",e=>{
 function openGameDarts1(){
  const host=document.getElementById("gameDarts1Host");
  const frame=document.getElementById("gameDarts1Frame");
- pauseMenuMusic();
+ try{music.pause()}catch(e){}
  host.style.display="block";
- let list=[];
+ let players=[];
  try{
-   const raw=JSON.parse(localStorage.getItem("tavern_clash_players_v1")||"[]");
-   list=raw.map(x=>typeof x==="string"?x:x&&x.name).filter(Boolean);
+  const raw=JSON.parse(localStorage.getItem("tavern_clash_players_v1")||"[]");
+  players=raw.map(x=>typeof x==="string"?x:(x&&x.name)).filter(Boolean);
  }catch(e){}
- setTimeout(()=>{try{frame.contentWindow.postMessage({type:"tc-darts-players",players:list},"*")}catch(e){}},80);
+ setTimeout(()=>{try{frame.contentWindow.postMessage({type:"tc-darts-players",players},"*")}catch(e){}},100);
 }
 window.addEventListener("message",e=>{
  const d=e.data||{};
  if(d.type==="tc-darts-close"){
-   document.getElementById("gameDarts1Host").style.display="none";
-   if(musicWanted)playMusic();
-   if(typeof renderStats==="function")renderStats();
+  document.getElementById("gameDarts1Host").style.display="none";
+  try{if(musicWanted)playMusic()}catch(x){}
  }
- if(d.type==="tc-darts-win"&&d.player&&typeof recordWin==="function"){
-   recordWin(d.player,"darts1");
-   if(typeof renderStats==="function")renderStats();
- }
+ if(d.type==="tc-darts-win"&&d.player&&typeof recordWin==="function")recordWin(d.player,"darts1");
 });
 
 function openGame30(){
@@ -1668,16 +1662,25 @@ window.addEventListener("message",e=>{
 
 </script>
 <section id="gameDarts1Host" style="position:fixed;inset:0;z-index:100001;background:#050201;display:none">
-<iframe id="gameDarts1Frame" src="game_darts_1.html?v=061" style="display:block;width:100%;height:100%;border:0;background:#050201" title="Šipky 1"></iframe>
+<iframe id="gameDarts1Frame" src="./game_darts_1.html?v=070" style="display:block;width:100%;height:100%;border:0;background:#050201" title="Šipky 1"></iframe>
 </section>
 <section id="game30Host" style="position:fixed;inset:0;z-index:100000;background:#050201;display:none">
 <iframe id="game30Frame" src="game30.html" style="display:block;width:100%;height:100%;border:0;background:#050201" title="30"></iframe>
 </section>
 <script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js").catch(() => {});
-  });
+
+</script>
+<script>
+/* v0.7 cache reset: prevents an old GitHub Pages service worker from serving stale index.html */
+if("serviceWorker" in navigator){
+ window.addEventListener("load",async()=>{
+  try{
+   const regs=await navigator.serviceWorker.getRegistrations();
+   await Promise.all(regs.map(r=>r.unregister()));
+   const keys=await caches.keys();
+   await Promise.all(keys.map(k=>caches.delete(k)));
+  }catch(e){}
+ });
 }
 </script>
 </body></html>
