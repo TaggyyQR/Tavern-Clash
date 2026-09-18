@@ -466,7 +466,7 @@ body{display:flex;justify-content:center}
 <!-- only text overlays needed for real CZ/EN translation -->
 <div class="liveLabel" id="diceLive">KOSTKY</div>
 <div class="liveLabel" id="cardsLive">KARTY</div>
-<div class="liveLabel" id="dartsLive">ŠIPKY</div>
+<div class="liveLabel" id="dartsLive">ŠIPKY</div><button id="openDarts1" type="button" style="display:block;width:100%;max-width:520px;margin:10px auto;padding:16px;border:1px solid #9a763f;border-radius:12px;background:linear-gradient(#392719,#1c130d);color:#f1d79d;font:700 18px Georgia,serif">1</button>
 <div class="menuLowerActions">
 <button id="playersMenuHit" type="button">HRÁČI</button>
 <button id="statsMenuHit" type="button">STATISTIKY</button>
@@ -1645,4 +1645,8 @@ if ("serviceWorker" in navigator) {
   });
 }
 </script>
-</body></html>
+<div id="darts1Overlay" style="display:none;position:fixed;inset:0;z-index:99999;background:#090705"><iframe id="darts1Frame" src="game_darts_1.html" style="width:100%;height:100%;border:0"></iframe></div><script id="darts1-integration">
+(function(){const b=document.getElementById("openDarts1"),o=document.getElementById("darts1Overlay");
+if(b)b.addEventListener("click",()=>{document.querySelectorAll("audio").forEach(a=>a.pause());o.style.display="block"});
+window.addEventListener("message",e=>{if((e.data||{}).type==="tc-darts-close")o.style.display="none"});
+})();</script></body></html>

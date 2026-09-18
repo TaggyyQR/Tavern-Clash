@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TAVERN CLASH — 1</title>
+<style>
+:root{--gold:#d9aa52;--gold2:#8c6428;--ink:#f4e5c2;--muted:#bba986;--panel:rgba(18,12,9,.94);--red:#9c3028;--green:#456c43}
+*{box-sizing:border-box} body{margin:0;min-height:100vh;color:var(--ink);font-family:Georgia,"Times New Roman",serif;background:
+radial-gradient(circle at 50% -10%,#684326 0,#2d1b13 30%,#120d0a 70%,#080605 100%);overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.16;background:repeating-linear-gradient(90deg,transparent 0 95px,#000 96px 99px)}
+.wrap{max-width:760px;margin:auto;padding:18px 14px 32px}.brand{text-align:center;color:#d9aa52;letter-spacing:.18em;font-weight:bold;font-size:14px}
+h1{text-align:center;margin:4px 0 16px;font-size:42px;text-shadow:0 2px 12px #000}.panel{background:linear-gradient(180deg,rgba(42,28,19,.97),rgba(18,12,9,.97));border:2px solid var(--gold2);border-radius:18px;padding:16px;box-shadow:0 10px 30px #0008,inset 0 0 0 1px #e1b75a22}
+.title{text-align:center;color:var(--gold);font-weight:bold;letter-spacing:.08em;margin-bottom:12px}.row{display:flex;gap:8px;flex-wrap:wrap}.choice,.btn,.num,.mode{border:1px solid #9c7437;background:linear-gradient(#4a3423,#2b1d14);color:var(--ink);border-radius:10px;font:700 18px Georgia;padding:12px;box-shadow:inset 0 1px #fff1;cursor:pointer}
+.choice{flex:1;min-width:70px}.choice.on,.mode.on{background:linear-gradient(#9c7437,#5d3c18);color:#fff4d1}.btn{width:100%;margin-top:12px}.primary{background:linear-gradient(#a67831,#604018);font-size:21px}.danger{border-color:#7b312c;background:#4b211e}.names{display:grid;gap:8px;margin-top:12px}.names input{width:100%;padding:12px;border-radius:9px;border:1px solid #806038;background:#140f0c;color:white;font:18px Georgia}
+.hidden{display:none!important}.scoreboard{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}.player{padding:10px;border:1px solid #69502f;border-radius:12px;background:#17100c}.player.active{border:2px solid var(--gold);box-shadow:0 0 18px #d9aa5233}.pname{font-size:15px;color:#d7c49f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pscore{font-size:34px;font-weight:bold;color:#fff2c8}.turn{text-align:center;border:1px solid #6c4e2b;border-radius:12px;background:#100b09;padding:10px;margin-bottom:10px}.turn strong{color:var(--gold);font-size:21px}.darts{min-height:28px;font-size:20px;margin-top:5px}.sum{color:#cdb98e;font-size:14px}
+.keypad{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.num{padding:14px 4px;font-size:20px}.num:active,.mode:active,.btn:active{transform:translateY(1px)}.specials{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:8px}.mode{font-size:16px}.classic{grid-column:1/-1;background:linear-gradient(#725020,#3b2814);color:#ffe8aa}.footerBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px}.status{text-align:center;min-height:26px;color:#f1c66d;font-weight:bold;margin:8px 0}.winner{font-size:30px;color:#f6cc6e;text-align:center;padding:20px 4px}.small{font-size:13px;color:var(--muted);text-align:center;margin-top:8px}
+@media(min-width:600px){.scoreboard{grid-template-columns:repeat(4,1fr)}.keypad{grid-template-columns:repeat(7,1fr)}}
+</style>
+
+<style id="fullscreen-mobile-fix">
+html,body{width:100%;height:100%;height:100dvh;overflow:hidden}
+body{min-height:100dvh}
+.wrap{height:100dvh;max-width:820px;padding:5px 7px 7px;display:flex;flex-direction:column;overflow:hidden}
+.brand{font-size:10px;line-height:12px}
+h1{font-size:24px;line-height:25px;margin:0 0 4px}
+#setup{overflow:auto}
+#game{min-height:0;flex:1;display:flex;flex-direction:column;overflow:hidden}
+#game.hidden{display:none!important}
+.scoreboard{flex:0 0 auto;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:4px}
+.player{padding:4px 6px;border-radius:8px;min-height:42px}
+.player.active{border-width:1.5px}
+.pname{font-size:11px;line-height:12px}
+.pscore{font-size:23px;line-height:25px}
+#game>.panel{min-height:0;flex:1;padding:6px;border-radius:10px;display:flex;flex-direction:column;overflow:hidden}
+.turn{padding:3px 5px;margin-bottom:3px;border-radius:8px;flex:0 0 auto}
+.turn strong{font-size:15px;line-height:16px}
+.darts{min-height:18px;font-size:15px;line-height:18px;margin-top:1px}
+.sum{font-size:11px;line-height:13px}
+.status{min-height:16px;margin:1px 0;font-size:11px;line-height:14px;flex:0 0 auto}
+.keypad{flex:1;min-height:0;display:grid;grid-template-columns:repeat(7,1fr);grid-template-rows:repeat(3,1fr);gap:3px}
+.num{min-height:0;padding:1px;font-size:16px;border-radius:7px}
+.specials{flex:0 0 auto;grid-template-columns:repeat(4,1fr);gap:3px;margin-top:3px}
+.mode{padding:6px 2px;font-size:11px;border-radius:7px}
+.classic{grid-column:1/-1;padding:5px}
+.footerBtns{flex:0 0 auto;gap:3px}
+.btn{margin-top:3px;padding:6px 3px;font-size:11px;border-radius:7px}
+#game .small{font-size:9px;line-height:10px;margin-top:2px}
+@media(max-height:700px){
+ .brand{display:none} h1{font-size:18px;line-height:19px;margin:0 0 2px}
+ .player{min-height:34px;padding:2px 5px}.pname{font-size:10px}.pscore{font-size:19px;line-height:20px}
+ .turn{padding:2px}.turn strong{font-size:13px}.darts{font-size:13px;min-height:15px;line-height:15px}.sum{font-size:9px;line-height:10px}
+ .status{min-height:12px;line-height:12px;font-size:9px}
+ .mode,.btn{padding:4px 1px}.classic{padding:3px}
+ #game .small{display:none}
+}
+@media(max-width:380px){
+ .scoreboard{grid-template-columns:repeat(2,1fr)}
+ .keypad{grid-template-columns:repeat(7,1fr)}
+ .num{font-size:14px}
+}
+</style>
+
+<style id="dart-keyboard-v2">
+/* compact board: square number keys, large touch controls, no page scrolling */
+html,body{overflow:hidden}
+#game>.panel{padding:6px 8px}
+.keypad{
+  flex:0 0 auto!important;
+  display:grid!important;
+  grid-template-columns:repeat(7,44px)!important;
+  grid-auto-rows:44px!important;
+  justify-content:center!important;
+  gap:4px!important;
+}
+.num{
+  width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;
+  padding:0!important;border-radius:7px!important;font-size:17px!important;line-height:44px!important;
+}
+.specials{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:6px!important;margin-top:6px!important;
+}
+.mode{
+  min-height:48px!important;padding:8px 5px!important;font-size:14px!important;line-height:16px!important;
+}
+.classic{grid-column:1/-1!important;min-height:46px!important;font-size:14px!important}
+.footerBtns{gap:6px!important}
+.footerBtns .btn{min-height:42px!important;padding:7px 4px!important;font-size:12px!important}
+@media(max-width:360px){
+ .keypad{grid-template-columns:repeat(7,40px)!important;grid-auto-rows:40px!important;gap:3px!important}
+ .num{width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;line-height:40px!important;font-size:15px!important}
+ .mode{min-height:45px!important;padding:6px 3px!important;font-size:13px!important}
+}
+@media(max-height:700px){
+ .keypad{grid-template-columns:repeat(7,39px)!important;grid-auto-rows:39px!important;gap:3px!important}
+ .num{width:39px!important;height:39px!important;min-width:39px!important;min-height:39px!important;line-height:39px!important;font-size:15px!important}
+ .mode{min-height:42px!important;padding:5px 3px!important;font-size:12px!important}
+ .classic{min-height:39px!important}
+ .footerBtns .btn{min-height:35px!important;padding:4px!important}
+}
+</style>
+
+<style id="dart-clarity-v3">
+/* V3: score first — dominant players, readable score, larger square keypad */
+.scoreboard{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:6px!important;
+  margin-bottom:6px!important;
+}
+.player{
+  min-height:58px!important;
+  padding:5px 8px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:6px!important;
+  border-radius:9px!important;
+}
+.player.active{
+  border:2px solid var(--gold)!important;
+  background:linear-gradient(180deg,#3b291b,#1d140e)!important;
+}
+.pname{
+  flex:1!important;
+  min-width:0!important;
+  font-size:16px!important;
+  line-height:18px!important;
+  font-weight:700!important;
+  color:#f0dfba!important;
+}
+.pscore{
+  flex:0 0 auto!important;
+  font-size:35px!important;
+  line-height:38px!important;
+  font-weight:800!important;
+  color:#fff4ca!important;
+  letter-spacing:-1px!important;
+}
+.turn{padding:4px 6px!important;margin-bottom:4px!important}
+.turn strong{font-size:18px!important;line-height:20px!important}
+.darts{font-size:17px!important;line-height:19px!important;min-height:19px!important}
+.sum{font-size:12px!important;line-height:14px!important}
+.status{margin:2px 0!important;min-height:14px!important;line-height:14px!important}
+
+.keypad{
+  grid-template-columns:repeat(7,48px)!important;
+  grid-auto-rows:48px!important;
+  gap:4px!important;
+}
+.num{
+  width:48px!important;height:48px!important;min-width:48px!important;min-height:48px!important;
+  line-height:48px!important;font-size:19px!important;font-weight:800!important;
+  border-radius:8px!important;
+}
+.mode{min-height:48px!important;font-size:14px!important;font-weight:800!important}
+.classic{min-height:44px!important}
+.footerBtns .btn{min-height:38px!important}
+
+@media(max-width:380px){
+ .player{min-height:54px!important;padding:4px 7px!important}
+ .pname{font-size:14px!important;line-height:16px!important}
+ .pscore{font-size:31px!important;line-height:33px!important}
+ .keypad{grid-template-columns:repeat(7,43px)!important;grid-auto-rows:43px!important;gap:3px!important}
+ .num{width:43px!important;height:43px!important;min-width:43px!important;min-height:43px!important;line-height:43px!important;font-size:17px!important}
+}
+@media(max-height:700px){
+ .scoreboard{gap:4px!important;margin-bottom:4px!important}
+ .player{min-height:45px!important;padding:2px 6px!important}
+ .pname{font-size:13px!important;line-height:14px!important}
+ .pscore{font-size:27px!important;line-height:29px!important}
+ .turn strong{font-size:15px!important}.darts{font-size:14px!important;min-height:15px!important;line-height:15px!important}
+ .sum{font-size:10px!important;line-height:11px!important}
+ .keypad{grid-template-columns:repeat(7,42px)!important;grid-auto-rows:42px!important}
+ .num{width:42px!important;height:42px!important;min-width:42px!important;min-height:42px!important;line-height:42px!important;font-size:17px!important}
+ .mode{min-height:40px!important;padding:4px 3px!important}
+ .classic{min-height:36px!important}
+}
+</style>
+
+<style id="dart-special-row-v4">
+.specials{
+ display:grid!important;
+ grid-template-columns:repeat(6,minmax(0,1fr))!important;
+ gap:6px!important;
+}
+#doubleBtn,#tripleBtn,#classicBtn{grid-column:span 2!important;min-height:50px!important}
+#backBtn,#missBtn{grid-column:span 3!important;min-height:44px!important}
+#classicBtn{font-size:14px!important}
+@media(max-height:700px){
+ #doubleBtn,#tripleBtn,#classicBtn{min-height:42px!important}
+ #backBtn,#missBtn{min-height:36px!important}
+}
+</style>
+
+<style id="player-score-colors-v7">
+/* Každý hráč má vlastní barvu score karty; aktivní hráč zůstává jasně zvýrazněný. */
+.player:nth-child(1){background:linear-gradient(180deg,#5b2525,#2b1414)!important;border-color:#a84c4c!important}
+.player:nth-child(2){background:linear-gradient(180deg,#21446b,#12253d)!important;border-color:#477fb5!important}
+.player:nth-child(3){background:linear-gradient(180deg,#28563a,#15301f)!important;border-color:#4d9665!important}
+.player:nth-child(4){background:linear-gradient(180deg,#644b1f,#33260f)!important;border-color:#b58a37!important}
+.player:nth-child(5){background:linear-gradient(180deg,#513568,#291c36)!important;border-color:#8a5cad!important}
+.player:nth-child(6){background:linear-gradient(180deg,#245b60,#133235)!important;border-color:#4a969c!important}
+
+.player .pname,.player .pscore{color:#fff!important;text-shadow:0 1px 2px #000!important}
+.player.active{
+ outline:3px solid #f0c86a!important;
+ outline-offset:1px!important;
+ box-shadow:0 0 0 2px #24170d,0 0 12px rgba(240,200,106,.55)!important;
+}
+</style>
+<style>
+.audioToggle{display:block;margin:0 auto 5px;min-height:34px;padding:5px 12px;border:1px solid #8e6b37;border-radius:7px;background:#21170f;color:#ead6a6;font-weight:800;font-size:11px}
+.audioToggle.off{opacity:.55}
+</style></head>
+<body>
+<div class="wrap">
+<div class="brand">TAVERN CLASH</div><h1>1</h1>
+
+<button type="button" id="commentatorBtn" class="audioToggle">KOMENTÁTOR: ON</button>
+<section id="setup" class="panel">
+<div class="title">PŘÍPRAVA HRY</div>
+<div class="small">POČET HRÁČŮ</div>
+<div class="row" id="playerChoices"></div>
+<div class="small">STARTOVNÍ SKÓRE</div>
+<div class="row" id="startChoices"></div>
+<div id="names" class="names"></div>
+<button class="btn primary" id="startBtn">ZAČÍT HRU</button>
+</section>
+
+<section id="game" class="hidden">
+<div id="scoreboard" class="scoreboard"></div>
+<div class="panel">
+<div class="turn"><strong id="turnName"></strong><div id="darts" class="darts">—</div><div id="sum" class="sum">Kolo: 0</div></div>
+<div id="status" class="status"></div>
+<div id="keypad" class="keypad"></div>
+<div class="specials">
+<button class="mode" id="doubleBtn">DOUBLE</button>
+<button class="mode" id="tripleBtn">TRIPLE</button>
+<button class="mode classic" id="classicBtn">KLASIKA</button>
+<button class="mode" id="backBtn">ZPĚT</button>
+<button class="mode danger" id="missBtn">0 / MIMO</button>
+</div>
+<div class="footerBtns">
+<button class="btn" id="undoTurnBtn">VRÁTIT KOLO</button>
+<button class="btn danger" id="newBtn">NOVÁ HRA</button>
+</div>
+<div class="small">MASTER OUT: poslední šipka musí být DOUBLE nebo TRIPLE.</div>
+</div>
+</section>
+
+<section id="win" class="panel hidden">
+<div class="winner" id="winnerText"></div>
+<button class="btn primary" id="rematchBtn">ODVETA</button>
+<button class="btn" id="newSetupBtn">NOVÍ HRÁČI / JINÉ SKÓRE</button>
+</section>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+let playerCount=2,startScore=501,players=[],active=0,darts=[],mult=1,history=[],roundStart=0,gameOver=false;
+let commentatorOn=localStorage.getItem("tc_darts_commentator_v1")!=="0";
+let audioQueue=[],audioPlaying=false,currentVoice=null;
+let audioUnlocked=false;
+function unlockCommentatorAudio(){
+ if(audioUnlocked)return;
+ audioUnlocked=true;
+ const a=new Audio(scoreFile(0));a.volume=0;a.play().then(()=>{a.pause();a.currentTime=0}).catch(()=>{});
+}
+document.addEventListener("pointerdown",unlockCommentatorAudio,{once:true});
+
+let lastScore26Variant=-1;
+function score26File(){let i=Math.floor(Math.random()*6);if(i===lastScore26Variant)i=(i+1+Math.floor(Math.random()*5))%6;lastScore26Variant=i;return "assets/audio/darts/score26/SCORE_026_"+String(i+1).padStart(2,"0")+".mp3"}
+function scoreFile(n){n=Math.max(0,Math.min(180,Math.round(n)));if(n===26)return score26File();return "assets/audio/darts/score/SCORE_"+String(n).padStart(3,"0")+".mp3"}
+function easterFile(n){return "assets/audio/darts/easter/EASTER_"+String(n).padStart(3,"0")+".mp3"}
+function queueVoice(src){if(!commentatorOn)return;audioQueue.push(src);playQueue()}
+function playQueue(){
+ if(audioPlaying||!commentatorOn||!audioQueue.length)return;
+ audioPlaying=true;currentVoice=new Audio(audioQueue.shift());currentVoice.volume=.95;
+ let done=()=>{audioPlaying=false;currentVoice=null;playQueue()};
+ currentVoice.addEventListener("ended",done,{once:true});currentVoice.addEventListener("error",done,{once:true});
+ currentVoice.play().catch(done);
+}
+function announceScore(n){
+ queueVoice(scoreFile(n)); // SCORE vždy první
+ if(Math.random()<0.12) queueVoice(easterFile(1+Math.floor(Math.random()*20))); // až potom Easter
+}
+function updateCommentator(){let b=$("#commentatorBtn");b.textContent=commentatorOn?"KOMENTÁTOR: ON":"KOMENTÁTOR: OFF";b.classList.toggle("off",!commentatorOn)}
+
+const saved=()=>{try{return JSON.parse(localStorage.getItem('tavern_clash_players_v1')||'[]')}catch(e){return[]}};
+const pc=$("#playerChoices"), sc=$("#startChoices");
+for(let n=1;n<=6;n++){let b=document.createElement("button");b.className="choice"+(n===2?" on":"");b.textContent=n;b.onclick=()=>{playerCount=n;renderSetup();};pc.appendChild(b)}
+[101,301,501,701].forEach(n=>{let b=document.createElement("button");b.className="choice"+(n===501?" on":"");b.textContent=n;b.onclick=()=>{startScore=n;[...sc.children].forEach(x=>x.classList.toggle("on",+x.textContent===n));};sc.appendChild(b)})
+function renderSetup(){
+ [...pc.children].forEach(x=>x.classList.toggle("on",+x.textContent===playerCount));
+ const box=$("#names"), old=[...box.querySelectorAll("input")].map(x=>x.value), known=saved(); box.innerHTML="";
+ for(let i=0;i<playerCount;i++){let inp=document.createElement("input");inp.placeholder="Hráč "+(i+1);inp.value=old[i]||known[i]?.name||known[i]||"";box.appendChild(inp)}
+}
+renderSetup();
+$("#startBtn").addEventListener("click", function(){
+ var ins=Array.from(document.querySelectorAll("#names input"));
+ players=ins.map(function(x,i){return {name:(x.value||"").trim()||("Hráč "+(i+1)),score:startScore};});
+ if(!players.length){ players=[{name:"Hráč 1",score:startScore}]; }
+ active=0; history=[]; gameOver=false;
+ $("#setup").classList.add("hidden");
+ $("#win").classList.add("hidden");
+ $("#game").classList.remove("hidden");
+ beginTurn(); render();
+});
+function beginTurn(){darts=[];mult=1;roundStart=players[active].score;$("#status").textContent="";}
+function label(v,m){if(v===0)return "MIMO"; if(v===25)return m===2?"D25":m===3?"T25":"25"; return (m===2?"D":m===3?"T":"")+v}
+function addDart(v,m=mult){
+ if(gameOver||darts.length>=3)return;
+ // Bull: triple bull is not a standard board segment; treat selected T+25 as invalid.
+ if(v===25&&m===3){$("#status").textContent="TRIPLE BULL není platný zásah.";mult=1;updateModes();return}
+ const pts=v*m, before=players[active].score, after=before-pts;
+ darts.push({v,m,pts,label:label(v,m)});
+ mult=1;updateModes();
+ // bust if below zero, or leaves 1 (cannot master-out), or hits zero without D/T
+ if(after<0 || after===1 || (after===0 && !(m===2||m===3))){
+   $("#status").textContent="BUST — skóre se vrací.";
+   players[active].score=roundStart; render(); announceScore(0); setTimeout(nextPlayer,450); return;
+ }
+ players[active].score=after;
+ if(after===0){announceScore(darts.reduce((a,x)=>a+x.pts,0));finishWinner();return}
+ if(darts.length===3){announceScore(darts.reduce((a,x)=>a+x.pts,0));setTimeout(nextPlayer,180);}
+ render();
+}
+function nextPlayer(){if(gameOver)return; active=(active+1)%players.length;beginTurn();render()}
+function finishWinner(){gameOver=true;render();setTimeout(()=>{$("#game").classList.add("hidden");$("#win").classList.remove("hidden");$("#winnerText").innerHTML="🏆 "+esc(players[active].name)+"<br><small>MASTER OUT</small>";},250)}
+function esc(s){return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function render(){
+ $("#scoreboard").innerHTML=players.map((p,i)=>`<div class="player ${i===active?"active":""}"><div class="pname">${esc(p.name)}</div><div class="pscore">${p.score}</div></div>`).join("");
+ $("#turnName").textContent=players[active]?.name||"";
+ $("#darts").textContent=darts.length?darts.map(x=>x.label).join("  |  "):"—";
+ $("#sum").textContent="Kolo: "+darts.reduce((a,x)=>a+x.pts,0)+" · zbývá "+(players[active]?.score??"");
+}
+const kp=$("#keypad");
+[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,25].forEach(function(n){
+  var b=document.createElement("button");
+  b.type="button"; b.className="num"; b.textContent=n===25?"25 / BULL":String(n);
+  b.addEventListener("click",function(){ if(darts.length===0) history.push(snapshot()); addDart(n); });
+  kp.appendChild(b);
+});
+function updateModes(){
+ $("#doubleBtn").classList.toggle("on",mult===2);
+ $("#tripleBtn").classList.toggle("on",mult===3);
+}
+$("#doubleBtn").addEventListener("click",function(){mult=mult===2?1:2;updateModes();});
+$("#tripleBtn").addEventListener("click",function(){mult=mult===3?1:3;updateModes();});
+$("#missBtn").addEventListener("click",function(){if(darts.length===0)history.push(snapshot());addDart(0,1);});
+$("#backBtn").addEventListener("click",function(){
+ if(!darts.length||gameOver)return;
+ var d=darts.pop(); players[active].score+=d.pts;
+ $("#status").textContent="Poslední šipka vrácena."; render();
+});
+$("#classicBtn").addEventListener("click",function(){
+ if(gameOver || darts.length!==0) return;
+ history.push(snapshot());
+
+ var p=players[active];
+ var after=p.score-26;
+
+ // KLASIKA is always three SINGLE darts: 1, 5, 20.
+ darts=[
+   {v:1,m:1,pts:1,label:"1"},
+   {v:5,m:1,pts:5,label:"5"},
+   {v:20,m:1,pts:20,label:"20"}
+ ];
+
+ // It cannot finish Master Out because the last dart is single 20.
+ if(after<0 || after===0 || after===1){
+   $("#status").textContent="KLASIKA: 1 | 5 | 20 = 26 · BUST";
+   p.score=roundStart;
+   render();
+   announceScore(0);
+   setTimeout(nextPlayer,700);
+   return;
+ }
+
+ p.score=after;
+ $("#status").textContent="KLASIKA: 1 | 5 | 20 = 26";
+ render();
+ announceScore(26);
+ setTimeout(nextPlayer,700);
+});
+function snapshot(){return {scores:players.map(function(p){return p.score}),active:active,roundStart:roundStart}}
+$("#undoTurnBtn").addEventListener("click",function(){
+ var h=history.pop();
+ if(!h){$("#status").textContent="Není co vrátit.";return}
+ h.scores.forEach(function(v,i){players[i].score=v});
+ active=h.active; beginTurn(); render(); $("#status").textContent="Kolo vráceno.";
+});
+$("#newBtn").onclick=()=>{$("#game").classList.add("hidden");$("#setup").classList.remove("hidden")}
+$("#newSetupBtn").onclick=()=>{$("#win").classList.add("hidden");$("#setup").classList.remove("hidden")}
+$("#rematchBtn").onclick=()=>{players.forEach(p=>p.score=startScore);active=0;history=[];gameOver=false;$("#win").classList.add("hidden");$("#game").classList.remove("hidden");beginTurn();render()}
+$("#commentatorBtn").addEventListener("click",function(){
+ commentatorOn=!commentatorOn;localStorage.setItem("tc_darts_commentator_v1",commentatorOn?"1":"0");
+ if(!commentatorOn){audioQueue=[];if(currentVoice){currentVoice.pause();currentVoice.currentTime=0}currentVoice=null;audioPlaying=false}
+ updateCommentator();
+});
+updateCommentator();
+function tcDartsClose(){parent.postMessage({type:"tc-darts-close"},"*")}
+</script>
+</body></html>
