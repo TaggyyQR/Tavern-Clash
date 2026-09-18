@@ -1,0 +1,1733 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080402">
+<title>TAVERN CLASH</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;min-height:100%;background:#050302;color:#f3d59a;font-family:Georgia,"Times New Roman",serif}
+body{display:flex;justify-content:center}
+#app{
+ position:relative;
+ width:100vw;
+ height:100dvh;
+ min-height:100svh;
+ max-width:none;
+ overflow:hidden;
+ background:#080402;
+}
+.screen{position:absolute;inset:0;display:none;overflow:hidden}
+.screen.active{display:block}
+
+/* ORIGINAL APPROVED MENU ARTWORK */
+#menu{background:url("assets/asset-1-c7aa3583019c.png") center center/cover no-repeat #080402}
+.hot{position:absolute;border:0;background:transparent;z-index:10;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.hot:active{background:rgba(255,190,80,.10)}
+/* Only the already finished 10K card is active. */
+#open10k{left:6.5%;top:32.5%;width:27.5%;height:18.5%}
+#musicHot{left:0;top:0;width:13%;height:7%}
+#langHot{right:0;top:0;width:18%;height:7%}
+.toast{position:absolute;z-index:50;left:50%;bottom:8.5%;transform:translateX(-50%);padding:9px 14px;border-radius:10px;border:1px solid #966631;background:#120a05ef;color:#ffe0a5;font:800 12px Arial;opacity:0;transition:.18s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1}
+
+/* 10K SCREEN — same tavern atmosphere, full-screen and responsive */
+#game{
+ background:
+ linear-gradient(rgba(7,3,1,.83),rgba(4,2,1,.94)),
+ url("assets/asset-1-c7aa3583019c.png") center/cover no-repeat;
+}
+.gameShell{height:100%;padding:2.2% 3.2% 2.4%;display:flex;flex-direction:column;gap:1.3%}
+.top{height:7%;display:flex;align-items:center;gap:8px}
+.top button,.langGame{border:1px solid #79512b;border-radius:9px;background:linear-gradient(#2b190f,#100905);color:#dfbf84;padding:8px 10px;font-weight:900}
+.title{flex:1;text-align:center;line-height:1}
+.title strong{display:block;color:#efc66d;font-size:clamp(18px,5.2vw,34px);letter-spacing:1.7px;text-shadow:0 3px 4px #000}
+.title small{font:800 clamp(8px,2.2vw,12px) Arial;color:#a98b62}
+.panel{border:1px solid #704b28;border-radius:14px;background:linear-gradient(#25150cde,#0c0704ed);box-shadow:inset 0 0 20px #0007,0 6px 18px #0008}
+#setup{margin:auto 0;padding:5%}
+#setup h1{text-align:center;margin:0;color:#efc66d;font-size:clamp(27px,7vw,45px)}
+.subtitle{text-align:center;margin:2% 0 5%;font:700 clamp(9px,2.4vw,13px) Arial;color:#b89a6d}
+.count{display:flex;justify-content:center;gap:6px;margin-bottom:4%}
+.count button{width:12%;aspect-ratio:1;border:1px solid #80562e;border-radius:8px;background:#130b06;color:#d8b77d;font-weight:1000}
+.count button.on{background:linear-gradient(#95602b,#42220e);border-color:#d09a4c;color:#fff0c4}
+.names{display:grid;gap:7px;max-width:440px;margin:auto}
+.names input{width:100%;padding:10px 12px;border:1px solid #634321;border-radius:8px;background:#090503e8;color:#f1d7a0;font:700 clamp(12px,3vw,15px) Arial;outline:none}
+.start{display:block;width:min(100%,440px);margin:5% auto 0;padding:13px;border:1px solid #d19b4e;border-radius:10px;background:linear-gradient(#9a6129,#45230d);color:#ffedbd;font-weight:1000;font-size:clamp(14px,3.8vw,18px)}
+#play{display:none;flex:1;min-height:0}
+.players{height:31%;display:grid;grid-template-columns:repeat(2,1fr);gap:5px;overflow:auto}
+.player{padding:7px 9px;border:1px solid #4f351c;border-radius:9px;background:#0d0704d9}
+.player.active{border-color:#d09949;background:#201207;box-shadow:0 0 12px #ce812c3d}
+.pn{font:900 clamp(9px,2.3vw,12px) Arial;color:#c7aa78;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ps{font-weight:1000;font-size:clamp(21px,5.8vw,34px);color:#efc66d}.nic{font:700 9px Arial;color:#967d5d}
+.turn{height:17%;margin-top:1.5%;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.turnWho{font:900 clamp(9px,2.4vw,12px) Arial;color:#bda071}.turnScore{font-weight:1000;font-size:clamp(36px,10vw,60px);color:#efc66d;text-shadow:0 3px 5px #000}
+.scores{height:13%;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:1.5%}
+.scores button{border:1px solid #90602f;border-radius:10px;background:linear-gradient(#382114,#120a05);color:#f1d294;font-weight:1000;font-size:clamp(17px,5vw,27px)}
+.actions{height:11%;display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:6px;margin-top:1.5%}
+.actions button{border:1px solid #654421;border-radius:9px;background:#130b06;color:#d7b982;font-weight:1000;font-size:clamp(10px,2.6vw,14px)}
+.actions .nothing{border-color:#744033;color:#dfa18f}.actions .next{border-color:#bd8440;background:linear-gradient(#805022,#351b0b);color:#ffedbb}
+#event{height:5%;text-align:center;padding-top:1.5%;font:800 clamp(9px,2.3vw,12px) Arial;color:#e2ae5d}
+.win{position:absolute;inset:0;z-index:100;display:none;align-items:center;justify-content:center;background:#070301ed;padding:6%;text-align:center}
+.win.on{display:flex}.winBox{width:100%;padding:8%;border:2px solid #c38a3e;border-radius:18px;background:radial-gradient(circle,#4a2911,#100805 72%);box-shadow:0 0 50px #d6812a55}
+.win h2{margin:0 0 3%;font-size:clamp(32px,9vw,54px);color:#efc66d}.win p{font:900 clamp(16px,4vw,22px) Arial;color:#f4ddb0}
+.win button{padding:12px 18px;border:1px solid #bd8440;border-radius:9px;background:#593215;color:#ffe6ad;font-weight:900}
+
+.musicToggleVisible{
+ position:absolute;z-index:60;left:12px;top:max(12px,env(safe-area-inset-top));
+ width:42px;height:42px;border:1px solid #9a6a35;border-radius:10px;
+ background:#120a05e8;color:#f0c77b;font:900 20px Georgia,serif;
+ box-shadow:0 4px 14px #000;cursor:pointer;
+}
+.musicToggleVisible.off{opacity:.55}
+
+/* ===== 10K BATTLE: VISUAL ENVIRONMENT ONLY ===== */
+#game{
+ background:
+   radial-gradient(circle at 18% 15%,rgba(255,142,43,.13),transparent 25%),
+   radial-gradient(circle at 82% 18%,rgba(255,188,76,.08),transparent 24%),
+   linear-gradient(rgba(7,3,1,.72),rgba(4,2,1,.91)),
+   url("assets/asset-1-c7aa3583019c.png") center/cover no-repeat;
+}
+#game:before{
+ content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+ background:
+   radial-gradient(ellipse at 50% 115%,rgba(117,49,11,.28),transparent 47%),
+   linear-gradient(90deg,rgba(0,0,0,.34),transparent 16%,transparent 84%,rgba(0,0,0,.34));
+ box-shadow:inset 0 0 75px #000;
+}
+.gameShell{position:relative;z-index:2}
+.top{
+ padding:0 1.2%;border-bottom:1px solid rgba(190,132,62,.28);
+ background:linear-gradient(90deg,transparent,rgba(49,26,12,.48),transparent)
+}
+.title strong{filter:drop-shadow(0 0 8px rgba(212,132,42,.22))}
+#setup.panel{
+ border-color:#8c6032;
+ background:
+   linear-gradient(rgba(43,24,13,.91),rgba(13,7,4,.95)),
+   radial-gradient(circle at 50% 0,rgba(205,125,39,.13),transparent 38%);
+}
+.players{
+ padding:6px;border:1px solid rgba(126,84,42,.45);border-radius:12px;
+ background:rgba(7,3,2,.42);box-shadow:inset 0 0 20px rgba(0,0,0,.5)
+}
+.player{
+ position:relative;overflow:hidden;
+ background:linear-gradient(135deg,rgba(34,19,10,.94),rgba(11,6,3,.96));
+ border-color:#50361d;
+ box-shadow:inset 0 1px rgba(255,213,143,.035)
+}
+.player.active{
+ border-color:#d39a4b;
+ background:linear-gradient(135deg,rgba(73,40,17,.96),rgba(22,11,5,.97));
+ box-shadow:0 0 15px rgba(212,139,53,.20),inset 0 0 16px rgba(204,120,35,.09)
+}
+.player.active:before{
+ content:"";position:absolute;left:0;top:0;bottom:0;width:4px;
+ background:linear-gradient(#f2c86d,#8d4d19);box-shadow:0 0 8px #dc8a34
+}
+.pn{padding-left:3px;letter-spacing:.25px}
+.ps{text-shadow:0 2px 4px #000}
+.nic{margin-top:2px}
+.turn{
+ position:relative;overflow:hidden;border-color:#a67439;
+ background:
+   radial-gradient(circle at 50% 28%,rgba(130,69,23,.35),transparent 58%),
+   linear-gradient(#26140a,#0d0704);
+ box-shadow:inset 0 0 25px #0008,0 5px 15px #0007
+}
+.turn:after{
+ content:"";position:absolute;left:10%;right:10%;bottom:0;height:1px;
+ background:linear-gradient(90deg,transparent,#c28b43,transparent)
+}
+.turnWho{text-transform:uppercase;letter-spacing:.7px}
+.turnScore{text-shadow:0 0 12px rgba(229,154,59,.20),0 4px 5px #000}
+.scores button{
+ position:relative;overflow:hidden;
+ background:linear-gradient(#452817,#160c06);
+ box-shadow:inset 0 1px rgba(255,223,164,.08),0 4px 10px #0008;
+ transition:transform .08s,filter .08s
+}
+.scores button:active,.actions button:active{transform:scale(.965);filter:brightness(1.25)}
+.scores button[data-add="1000"]{
+ border-color:#bd8440;background:linear-gradient(#68401e,#251207);
+ box-shadow:inset 0 1px rgba(255,226,166,.13),0 0 12px rgba(199,126,43,.13)
+}
+.actions button{box-shadow:inset 0 1px rgba(255,255,255,.025),0 3px 8px #0007}
+.actions .next{box-shadow:inset 0 1px rgba(255,228,170,.10),0 4px 11px #0008}
+#event{letter-spacing:.2px;text-shadow:0 2px 3px #000}
+
+/* score/action FX */
+#gameFx{
+ position:absolute;z-index:80;left:50%;top:55%;transform:translate(-50%,-50%) scale(.7);
+ pointer-events:none;opacity:0;font:1000 clamp(38px,11vw,72px) Georgia,serif;
+ color:#ffd77d;text-shadow:0 0 12px #d9872f,0 4px 7px #000
+}
+#gameFx.score{animation:tcScore .55s ease-out}
+#gameFx.bad{color:#e89a78;text-shadow:0 0 12px #7e2c1d,0 4px 7px #000;animation:tcBad .6s ease-out}
+#gameFx.commit{font-size:clamp(24px,7vw,44px);animation:tcCommit .55s ease-out}
+@keyframes tcScore{
+ 0%{opacity:0;transform:translate(-50%,-42%) scale(.55)}
+ 25%{opacity:1;transform:translate(-50%,-52%) scale(1.13)}
+ 100%{opacity:0;transform:translate(-50%,-78%) scale(.96)}
+}
+@keyframes tcBad{
+ 0%{opacity:0;transform:translate(-50%,-50%) scale(.8)}
+ 20%,70%{opacity:1}
+ 35%{transform:translate(calc(-50% - 5px),-50%) scale(1.05)}
+ 50%{transform:translate(calc(-50% + 5px),-50%) scale(1.05)}
+ 100%{opacity:0;transform:translate(-50%,-58%) scale(.95)}
+}
+@keyframes tcCommit{
+ 0%{opacity:0;transform:translate(-50%,-45%) scale(.75)}
+ 25%,65%{opacity:1}
+ 100%{opacity:0;transform:translate(-50%,-68%) scale(1.04)}
+}
+#play.tc-shake{animation:tcShake .32s linear}
+@keyframes tcShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}50%{transform:translateX(4px)}75%{transform:translateX(-2px)}}
+
+/* subtle ember atmosphere inside 10K only */
+.ember{position:absolute;z-index:1;bottom:-10px;width:3px;height:3px;border-radius:50%;background:#d77b2d;opacity:0;pointer-events:none;animation:emberUp var(--d) linear infinite;animation-delay:var(--delay)}
+@keyframes emberUp{
+ 0%{opacity:0;transform:translate(0,0)}
+ 15%{opacity:.5}70%{opacity:.18}
+ 100%{opacity:0;transform:translate(var(--drift),-72vh)}
+}
+
+
+/* ===== EXACT IMAGE-BASED MAIN MENU ===== */
+#menu{
+  background:#080402;
+}
+.menuExact{
+  position:absolute;inset:0;
+  background:url("assets/asset-2-ff5aedfab131.png") center center / 100% 100% no-repeat;
+}
+.artHit{
+  position:absolute;z-index:40;border:0;background:transparent;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+}
+.artHit:active{background:rgba(255,190,80,.08)}
+
+/* top artwork buttons */
+#musicArtHit{left:4.5%;top:1.5%;width:11.5%;height:8%}
+#czArtHit{left:40%;top:1.5%;width:9.5%;height:8%}
+#enArtHit{left:50%;top:1.5%;width:9.5%;height:8%}
+#fsArtHit{right:4.2%;top:1.5%;width:11.5%;height:8%}
+
+/* three category tiles */
+#diceArtHit{left:9.4%;top:43.4%;width:25.7%;height:18.8%}
+#cardsArtHit{left:37.3%;top:43.4%;width:25.7%;height:18.8%}
+#dartsArtHit{left:65.2%;top:43.4%;width:25.7%;height:18.8%}
+
+/* exact label strip overlay only, to allow language switching */
+.liveLabel{
+  position:absolute;z-index:31;top:56.6%;height:4.4%;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(#392315,#160c07);
+  border-top:1px solid #74502c;border-bottom:1px solid #3a2414;
+  color:#efc66d;text-shadow:0 2px 3px #000;
+  font:1000 clamp(13px,3.8vw,23px) Georgia,serif;
+  pointer-events:none;
+}
+#diceLive{left:10.4%;width:23.7%}
+#cardsLive{left:38.3%;width:23.7%}
+#dartsLive{left:66.2%;width:23.7%}
+
+/* category subpage keeps same tavern look */
+#categoryScreen{
+  position:absolute;inset:0;z-index:85;display:none;
+  background:
+    linear-gradient(rgba(8,4,2,.80),rgba(3,1,1,.96)),
+    url("assets/asset-2-ff5aedfab131.png") center/cover no-repeat;
+}
+#categoryScreen.active{display:block}
+.catPageExact{height:100%;padding:4%;display:flex;flex-direction:column}
+.catTopExact{height:9%;display:flex;align-items:center;gap:10px}
+.catTopExact button{
+  border:1px solid #79512b;border-radius:9px;
+  background:linear-gradient(#2b190f,#100905);color:#dfbf84;
+  padding:10px;font-weight:900
+}
+.catTopExact h2{
+  flex:1;text-align:center;margin:0;color:#efc66d;
+  font:1000 clamp(24px,7vw,42px) Georgia,serif
+}
+#catGamesExact{margin-top:5%}
+.catGameExact{
+  width:100%;min-height:110px;padding:20px;
+  border:1px solid #956535;border-radius:14px;
+  background:linear-gradient(120deg,#351e10,#100804);
+  color:#f2d49a;text-align:left;
+  box-shadow:inset 0 0 20px #0007,0 6px 15px #0009;
+  cursor:pointer
+}
+.catGameExact strong{
+  display:block;color:#efc66d;
+  font:1000 clamp(24px,7vw,40px) Georgia
+}
+.catGameExact span{font:800 12px Arial;color:#ad9067}
+.catEmptyExact{text-align:center;margin-top:22%;color:#9d835e;font:800 13px Arial}
+
+
+/* ===== PLAYERS DATABASE ===== */
+#playersMenuHit{
+ position:absolute;z-index:42;left:50%;bottom:4.2%;transform:translateX(-50%);
+ min-width:132px;height:44px;padding:0 18px;border:1px solid #9a6a35;border-radius:12px;
+ background:linear-gradient(#2f1b10,#100805);color:#efc66d;
+ font:1000 13px Arial;letter-spacing:.3px;box-shadow:0 5px 14px #000a;
+}
+#playersMenuHit:active{transform:translateX(-50%) scale(.97);filter:brightness(1.18)}
+
+#playersScreen{
+ position:absolute;inset:0;z-index:88;display:none;
+ background:
+   radial-gradient(circle at 50% 14%,rgba(183,92,26,.15),transparent 26%),
+   linear-gradient(rgba(7,3,1,.82),rgba(3,1,1,.96));
+}
+#playersScreen.active{display:block}
+.playersPage{height:100%;padding:4%;display:flex;flex-direction:column}
+.playersTop{display:flex;align-items:center;gap:10px;min-height:58px}
+.playersTop button{
+ border:1px solid #79512b;border-radius:9px;background:linear-gradient(#2b190f,#100905);
+ color:#dfbf84;padding:10px 12px;font-weight:900
+}
+.playersTop h2{
+ flex:1;text-align:center;margin:0;color:#efc66d;
+ font:1000 clamp(25px,7vw,42px) Georgia,serif
+}
+.playerAdd{
+ margin-top:10px;padding:12px;border:1px solid #76502b;border-radius:14px;
+ background:linear-gradient(rgba(41,22,12,.94),rgba(11,6,3,.97));
+ box-shadow:inset 0 0 18px #0008,0 6px 14px #0008
+}
+.playerAddRow{display:grid;grid-template-columns:1fr auto;gap:8px}
+.playerAdd input{
+ width:100%;min-width:0;border:1px solid #654321;border-radius:9px;background:#090402e8;
+ color:#f3d7a0;padding:12px;font:800 16px Arial;outline:none
+}
+.playerAdd input:focus{border-color:#c38a41;box-shadow:0 0 0 2px rgba(195,138,65,.14)}
+.playerAdd button{
+ min-width:96px;border:1px solid #bd8440;border-radius:9px;
+ background:linear-gradient(#805022,#351a0b);color:#fff0bd;font-weight:1000
+}
+.playerHint{margin-top:7px;color:#9f825e;font:800 10px Arial}
+#playersList{margin-top:12px;display:grid;gap:8px;overflow:auto;padding-bottom:20px}
+.playerRow{
+ display:grid;grid-template-columns:42px 1fr auto;gap:10px;align-items:center;
+ padding:10px;border:1px solid #5b3c20;border-radius:11px;
+ background:linear-gradient(120deg,#26140b,#0d0704);box-shadow:inset 0 0 14px #0006
+}
+.playerAvatar{
+ width:42px;height:42px;border-radius:50%;display:grid;place-items:center;
+ border:1px solid #9a6a35;background:#1b0e07;color:#efc66d;
+ font:1000 17px Arial
+}
+.playerInfo{min-width:0}
+.playerName{color:#efd39a;font:1000 15px Arial;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.playerMeta{margin-top:3px;color:#8f7556;font:800 9px Arial}
+.playerDelete{
+ width:42px;height:42px;border:1px solid #744034;border-radius:9px;
+ background:#170806;color:#d99480;font-weight:1000
+}
+.playersEmpty{
+ margin-top:18%;text-align:center;color:#9d835e;font:800 13px Arial;line-height:1.5
+}
+
+
+/* ===== LOWER MENU ACTIONS: PLAYERS + STATISTICS ===== */
+.menuLowerActions{
+ position:absolute;z-index:42;left:11%;right:11%;top:65.3%;
+ display:grid;grid-template-columns:1fr 1fr;gap:4%;
+}
+.menuLowerActions button{
+ min-height:46px;border:1px solid #8f6134;border-radius:12px;
+ background:linear-gradient(#2d1a10,#100805);color:#efc66d;
+ font:1000 12px Arial;letter-spacing:.3px;
+ box-shadow:inset 0 0 14px #0008,0 5px 13px #0009
+}
+.menuLowerActions button:active{transform:scale(.98);filter:brightness(1.15)}
+#playersMenuHit{
+ position:static!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;
+ transform:none!important;min-width:0!important;width:auto!important;height:auto!important;padding:0 14px!important;
+}
+#playersMenuHit:active{transform:scale(.98)!important}
+#statsMenuHit{width:100%}
+
+/* ===== STATISTICS ===== */
+#statsScreen{
+ position:absolute;inset:0;z-index:88;display:none;
+ background:
+   radial-gradient(circle at 50% 14%,rgba(183,92,26,.15),transparent 26%),
+   linear-gradient(rgba(7,3,1,.82),rgba(3,1,1,.96));
+}
+#statsScreen.active{display:block}
+.statsPage{height:100%;padding:4%;display:flex;flex-direction:column}
+.statsTop{display:flex;align-items:center;gap:10px;min-height:58px}
+.statsTop button{
+ border:1px solid #79512b;border-radius:9px;background:linear-gradient(#2b190f,#100905);
+ color:#dfbf84;padding:10px 12px;font-weight:900
+}
+.statsTop h2{
+ flex:1;text-align:center;margin:0;color:#efc66d;
+ font:1000 clamp(25px,7vw,42px) Georgia,serif
+}
+.statsSummary{
+ margin-top:10px;padding:12px;border:1px solid #75502b;border-radius:14px;
+ background:linear-gradient(rgba(41,22,12,.94),rgba(11,6,3,.97));
+ box-shadow:inset 0 0 18px #0008,0 6px 14px #0008
+}
+.statsSummaryTitle{color:#efc66d;font:1000 13px Arial}
+.statsSummarySub{margin-top:4px;color:#9f825e;font:800 10px Arial}
+#statsList{margin-top:12px;display:grid;gap:9px;overflow:auto;padding-bottom:20px}
+.statRow{
+ padding:11px;border:1px solid #5b3c20;border-radius:11px;
+ background:linear-gradient(120deg,#26140b,#0d0704);box-shadow:inset 0 0 14px #0006
+}
+.statPlayer{
+ display:flex;justify-content:space-between;gap:10px;align-items:center;
+ color:#efd39a;font:1000 15px Arial
+}
+.statTotal{color:#efc66d;font-size:18px}
+.statGames{
+ margin-top:7px;display:flex;gap:6px;flex-wrap:wrap
+}
+.statChip{
+ padding:5px 8px;border:1px solid #6c4826;border-radius:8px;
+ background:#120905;color:#a88b65;font:800 9px Arial
+}
+.statsEmpty{
+ margin-top:18%;text-align:center;color:#9d835e;font:800 13px Arial;line-height:1.5
+}
+
+
+/* ===== LOCKED 10K MODULE HOST ===== */
+#game10kHost{
+ position:absolute;inset:0;z-index:120;display:none;background:#050201;
+}
+#game10kHost.active{display:block}
+#game10kFrame{
+ width:100%;height:100%;border:0;display:block;background:#050201;
+}
+
+
+/* ===== STATISTICS RESET ===== */
+.statsResetRow{
+ margin-top:12px;display:flex;justify-content:flex-end;
+}
+#statsReset{
+ min-height:44px;padding:0 14px;border:1px solid #7d4034;border-radius:10px;
+ background:linear-gradient(#2a100c,#120604);color:#e1a08c;font:1000 11px Arial;
+ box-shadow:0 4px 10px #0008
+}
+#statsReset:active{transform:scale(.97);filter:brightness(1.15)}
+#statsResetConfirm{
+ position:absolute;inset:0;z-index:140;display:none;align-items:center;justify-content:center;
+ padding:24px;background:rgba(5,2,1,.92);backdrop-filter:blur(3px)
+}
+#statsResetConfirm.on{display:flex}
+.statsConfirmBox{
+ width:min(100%,440px);padding:22px;border:1px solid #8c4937;border-radius:16px;
+ background:radial-gradient(circle at 50% 0,#38150f,#100604 68%);
+ box-shadow:0 0 38px #000;text-align:center
+}
+.statsConfirmBox h3{margin:0;color:#e5ad91;font:1000 25px Georgia}
+.statsConfirmBox p{margin:10px 0 0;color:#bda17c;font:800 12px Arial;line-height:1.45}
+.statsConfirmBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:17px}
+.statsConfirmBtns button{
+ min-height:46px;border-radius:10px;border:1px solid #694523;background:#150a05;color:#d9bb84;font-weight:1000
+}
+#statsResetYes{border-color:#8c4937;color:#e9a995;background:#220b07}
+
+</style>
+
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#070301">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TAVERN CLASH">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+
+</head>
+<body>
+<main id="app">
+<audio id="music" loop preload="auto"><source src="assets/asset-3-534a26b685a6.mp3" type="audio/mpeg"></audio>
+
+
+<section id="menu" class="screen active">
+  <div class="menuExact"></div>
+
+  <!-- invisible functional hit areas aligned to the artwork -->
+  <button id="musicArtHit" class="artHit" aria-label="Hudba"></button>
+  <button id="czArtHit" class="artHit" aria-label="Čeština"></button>
+  <button id="enArtHit" class="artHit" aria-label="English"></button>
+  <button id="fsArtHit" class="artHit" aria-label="Fullscreen"></button>
+
+  <button id="diceArtHit" class="artHit" aria-label="Kostky"></button>
+  <button id="cardsArtHit" class="artHit" aria-label="Karty"></button>
+  <button id="dartsArtHit" class="artHit" aria-label="Šipky"></button>
+
+  <!-- only text overlays needed for real CZ/EN translation -->
+  <div id="diceLive" class="liveLabel">KOSTKY</div>
+  <div id="cardsLive" class="liveLabel">KARTY</div>
+  <div id="dartsLive" class="liveLabel">ŠIPKY</div>
+
+  <div class="menuLowerActions">
+  <button id="playersMenuHit" type="button">HRÁČI</button>
+  <button id="statsMenuHit" type="button">STATISTIKY</button>
+</div>
+  <div id="toast" class="toast"></div>
+</section>
+
+
+
+
+
+<section id="statsScreen">
+  <div class="statsPage">
+    <div class="statsTop">
+      <button id="statsBack" type="button">← MENU</button>
+      <h2 id="statsTitle">STATISTIKY</h2>
+      <div style="width:72px"></div>
+    </div>
+    <div class="statsSummary">
+      <div id="statsSummaryTitle" class="statsSummaryTitle">VÝHRY HRÁČŮ</div>
+      <div id="statsSummarySub" class="statsSummarySub">Počet vítězství v jednotlivých hrách.</div>
+    </div>
+    <div class="statsResetRow">
+      <button id="statsReset" type="button">RESET STATISTIK</button>
+    </div>
+    <div id="statsList"></div>
+  </div>
+</section>
+
+<div id="statsResetConfirm" role="dialog" aria-modal="true">
+  <div class="statsConfirmBox">
+    <h3 id="statsResetTitle">Resetovat statistiky?</h3>
+    <p id="statsResetText">Všechna zaznamenaná vítězství budou vynulována. Tuto akci nelze vrátit zpět.</p>
+    <div class="statsConfirmBtns">
+      <button id="statsResetNo" type="button">ZRUŠIT</button>
+      <button id="statsResetYes" type="button">RESETOVAT</button>
+    </div>
+  </div>
+</div>
+<section id="playersScreen">
+  <div class="playersPage">
+    <div class="playersTop">
+      <button id="playersBack" type="button">← MENU</button>
+      <h2 id="playersTitle">HRÁČI</h2>
+      <div style="width:72px"></div>
+    </div>
+
+    <div class="playerAdd">
+      <div class="playerAddRow">
+        <input id="newPlayerName" type="text" maxlength="24" placeholder="Jméno hráče">
+        <button id="addPlayer" type="button">PŘIDAT</button>
+      </div>
+      <div id="playerHint" class="playerHint">Hráči se ukládají v tomto zařízení a později je vybereš v jednotlivých hrách.</div>
+    </div>
+
+    <div id="playersList"></div>
+  </div>
+</section>
+<section id="categoryScreen">
+  <div class="catPageExact">
+    <div class="catTopExact">
+      <button id="catBackExact">← MENU</button>
+      <h2 id="catTitleExact"></h2>
+    </div>
+    <div id="catGamesExact"></div>
+  </div>
+</section>
+<section id="game" class="screen">
+ <div id="gameFx"></div>
+ <i class="ember" style="left:12%;--d:5.7s;--delay:-1s;--drift:18px"></i>
+ <i class="ember" style="left:27%;--d:7.1s;--delay:-4s;--drift:-13px"></i>
+ <i class="ember" style="left:64%;--d:6.4s;--delay:-2s;--drift:22px"></i>
+ <i class="ember" style="left:83%;--d:8.2s;--delay:-6s;--drift:-18px"></i>
+ <div class="gameShell">
+  <div class="top">
+   <button id="back">← MENU</button>
+   <div class="title"><strong>TAVERN CLASH</strong><small>10K BATTLE</small></div>
+   <button id="gameLang" class="langGame">CZ</button>
+  </div>
+
+  <section id="setup" class="panel">
+   <h1>10K BATTLE</h1>
+   <div class="subtitle" data-t="choose"></div>
+   <div id="count" class="count"></div>
+   <div id="names" class="names"></div>
+   <button id="start" class="start" data-t="start"></button>
+  </section>
+
+  <section id="play">
+   <div id="players" class="players"></div>
+   <div class="turn panel"><div id="turnWho" class="turnWho"></div><div id="turnScore" class="turnScore">+0</div></div>
+   <div class="scores"><button data-add="50">+50</button><button data-add="100">+100</button><button data-add="1000">+1000</button></div>
+   <div class="actions">
+    <button id="undo" data-t="undo"></button>
+    <button id="nothing" class="nothing" data-t="nothing"></button>
+    <button id="next" class="next" data-t="next"></button>
+   </div>
+   <div id="event"></div>
+  </section>
+ </div>
+ <div id="win" class="win"><div class="winBox"><h2 data-t="victory"></h2><p id="winner"></p><button id="again" data-t="again"></button></div></div>
+</section>
+</main>
+
+<section id="game10kHost">
+  <iframe id="game10kFrame" title="10K Battle" srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;cs&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1,viewport-fit=cover&quot;&gt;
+&lt;meta name=&quot;theme-color&quot; content=&quot;#070301&quot;&gt;
+&lt;title&gt;TAVERN CLASH — 10K Battle&lt;/title&gt;
+&lt;style&gt;
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#050201;color:#f2d59a;font-family:Georgia,&quot;Times New Roman&quot;,serif}
+button,input{font:inherit}
+button{cursor:pointer}
+#app{
+  min-height:100dvh;max-width:768px;margin:auto;position:relative;overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 14%,rgba(201,108,30,.19),transparent 28%),
+    linear-gradient(rgba(8,4,2,.78),rgba(3,1,1,.95)),
+    url(&quot;assets/asset-1-c7aa3583019c.png&quot;) center/cover no-repeat;
+}
+#app:before{
+  content:&quot;&quot;;position:absolute;inset:0;pointer-events:none;
+  box-shadow:inset 0 0 85px #000;
+  background:linear-gradient(90deg,rgba(0,0,0,.24),transparent 14%,transparent 86%,rgba(0,0,0,.24));
+}
+.shell{position:relative;z-index:2;min-height:100dvh;padding:max(14px,env(safe-area-inset-top)) 14px max(16px,env(safe-area-inset-bottom));display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:8px}
+.brand{flex:1;text-align:center;line-height:1}
+.brand strong{display:block;color:#efc66d;font-size:clamp(23px,6vw,38px);letter-spacing:1.4px;text-shadow:0 4px 5px #000}
+.brand small{font:900 10px Arial;color:#a98b62;letter-spacing:1.2px}
+.iconbtn,.topbtn{
+  border:1px solid #7c522a;border-radius:10px;background:linear-gradient(#2f1b10,#100805);
+  color:#dfbd80;min-height:42px;padding:8px 10px;font:900 11px Arial;
+  box-shadow:inset 0 1px rgba(255,255,255,.04),0 4px 10px #0008
+}
+.iconbtn{min-width:42px;font-size:18px;padding:0}
+.toolbar{display:flex;gap:7px;margin-top:10px}
+.toolbar .topbtn{flex:1}
+.panel{
+  border:1px solid #75502b;border-radius:16px;
+  background:linear-gradient(rgba(42,23,12,.94),rgba(11,6,3,.97));
+  box-shadow:inset 0 0 22px #0008,0 7px 18px #0009
+}
+
+/* SETUP */
+#setup{margin:auto 0;padding:22px 18px}
+#setup h1{margin:0;text-align:center;color:#efc66d;font-size:clamp(31px,8vw,49px)}
+#setup p{text-align:center;margin:7px 0 18px;color:#ad9067;font:800 12px Arial}
+.count{display:flex;justify-content:center;gap:7px;flex-wrap:wrap}
+.count button{
+  width:46px;height:46px;border:1px solid #80562e;border-radius:9px;background:#120905;color:#dab97e;font-weight:1000
+}
+.count button.on{background:linear-gradient(#9a632d,#43220d);border-color:#d19a4d;color:#fff2c8;box-shadow:0 0 14px rgba(210,139,51,.25)}
+.names{display:grid;gap:8px;max-width:450px;margin:18px auto 0}
+.names input{
+  width:100%;border:1px solid #644321;border-radius:9px;background:#090402e8;color:#f3d7a0;
+  padding:12px;font:800 15px Arial;outline:none
+}
+.names input:focus{border-color:#c48b42;box-shadow:0 0 0 2px rgba(196,139,66,.14)}
+.start{
+  width:min(100%,450px);display:block;margin:19px auto 0;padding:15px;border:1px solid #d09a4b;border-radius:11px;
+  background:linear-gradient(#9c632c,#48240e);color:#fff0bd;font-weight:1000;font-size:17px;
+  box-shadow:0 7px 18px #000b
+}
+
+/* GAME */
+#game{display:none;flex:1;min-height:0;padding-top:10px}
+.statusline{
+  display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px;
+  color:#9f835d;font:800 10px Arial;letter-spacing:.7px
+}
+.statusdot{width:6px;height:6px;border-radius:50%;background:#d89a46;box-shadow:0 0 8px #d89a46}
+.players{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;
+  max-height:31dvh;overflow:auto;padding:4px;border:1px solid rgba(117,76,38,.45);border-radius:12px;background:rgba(7,3,2,.42)
+}
+.player{
+  position:relative;overflow:hidden;min-height:73px;padding:10px 11px;border:1px solid #4f351d;border-radius:10px;
+  background:linear-gradient(135deg,rgba(31,17,9,.95),rgba(10,5,3,.98));
+  display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;align-items:center
+}
+.player.active{
+  border-color:#d29a4b;background:linear-gradient(135deg,rgba(75,41,18,.97),rgba(20,10,5,.98));
+  box-shadow:0 0 16px rgba(211,139,54,.25),inset 0 0 17px rgba(203,118,34,.08)
+}
+.player.active:before{
+  content:&quot;&quot;;position:absolute;left:0;top:0;bottom:0;width:4px;
+  background:linear-gradient(#f4cf78,#8d4d19);box-shadow:0 0 8px #df8b35
+}
+.pname{grid-column:1;font:1000 12px Arial;color:#cdb07c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pscore{grid-column:2;grid-row:1/3;color:#f0c86e;font-weight:1000;font-size:clamp(25px,6.3vw,38px);text-shadow:0 3px 4px #000}
+.pnic{grid-column:1;color:#927858;font:800 9px Arial;margin-top:4px}
+.turn{
+  margin-top:8px;padding:10px;min-height:106px;display:flex;flex-direction:column;justify-content:center;align-items:center;
+  position:relative;overflow:hidden;border-color:#9e6d34;
+  background:radial-gradient(circle at 50% 26%,rgba(130,70,23,.35),transparent 58%),linear-gradient(#27150a,#0c0603)
+}
+.turn:after{content:&quot;&quot;;position:absolute;left:12%;right:12%;bottom:0;height:1px;background:linear-gradient(90deg,transparent,#c38a40,transparent)}
+.turnwho{font:1000 11px Arial;color:#c3a575;text-transform:uppercase;letter-spacing:.8px}
+.turnscore{font-weight:1000;font-size:clamp(45px,12vw,74px);line-height:1;color:#f0c86e;text-shadow:0 0 13px rgba(225,148,50,.17),0 4px 5px #000}
+.progressWrap{width:78%;height:6px;border-radius:10px;background:#0a0503;overflow:hidden;margin-top:8px;border:1px solid #4e321a}
+.progress{height:100%;width:0;background:linear-gradient(90deg,#744119,#e3a54f);transition:width .35s ease}
+.scoreBtns{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:8px}
+.scoreBtns button{
+  min-height:66px;border:1px solid #90602f;border-radius:11px;background:linear-gradient(#452817,#150b05);
+  color:#f2d49b;font-size:clamp(19px,5vw,29px);font-weight:1000;
+  box-shadow:inset 0 1px rgba(255,227,173,.07),0 5px 12px #0009;transition:.08s
+}
+.scoreBtns button[data-add=&quot;1000&quot;]{border-color:#bd8440;background:linear-gradient(#6a401d,#241207)}
+.scoreBtns button:active,.actions button:active{transform:scale(.96);filter:brightness(1.25)}
+.actions{display:grid;grid-template-columns:1fr 1fr 1.25fr;gap:7px;margin-top:7px}
+.actions button{
+  min-height:52px;border-radius:10px;border:1px solid #654421;background:#130a05;color:#d8ba83;font:1000 12px Arial
+}
+.actions .zero{border-color:#754035;color:#dfa08c}
+.actions .next{border-color:#bd8440;background:linear-gradient(#825022,#351a0b);color:#fff0bd}
+#event{min-height:27px;padding-top:7px;text-align:center;font:900 11px Arial;color:#e1ae62}
+
+/* FX */
+.fx{
+  position:absolute;z-index:80;left:50%;top:54%;transform:translate(-50%,-50%) scale(.7);
+  pointer-events:none;opacity:0;color:#ffd77b;font:1000 clamp(42px,13vw,80px) Georgia;
+  text-shadow:0 0 14px #d9862c,0 5px 8px #000
+}
+.fx.score{animation:scoreFx .56s ease-out}
+.fx.bad{color:#e69a78;text-shadow:0 0 13px #7d2d1d,0 4px 7px #000;animation:badFx .62s ease-out}
+.fx.commit{font-size:clamp(24px,7vw,44px);animation:commitFx .55s ease-out}
+@keyframes scoreFx{0%{opacity:0;transform:translate(-50%,-42%) scale(.55)}25%{opacity:1;transform:translate(-50%,-54%) scale(1.15)}100%{opacity:0;transform:translate(-50%,-79%) scale(.96)}}
+@keyframes badFx{0%{opacity:0}20%,70%{opacity:1}35%{transform:translate(calc(-50% - 5px),-50%) scale(1.05)}50%{transform:translate(calc(-50% + 5px),-50%) scale(1.05)}100%{opacity:0;transform:translate(-50%,-60%) scale(.95)}}
+@keyframes commitFx{0%{opacity:0;transform:translate(-50%,-45%) scale(.75)}25%,65%{opacity:1}100%{opacity:0;transform:translate(-50%,-68%) scale(1.04)}}
+.shake{animation:shake .34s linear}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+.ember{position:absolute;z-index:1;bottom:-8px;width:3px;height:3px;border-radius:50%;background:#d77b2d;opacity:0;pointer-events:none;animation:emberUp var(--d) linear infinite;animation-delay:var(--delay)}
+@keyframes emberUp{0%{opacity:0;transform:translate(0,0)}15%{opacity:.45}70%{opacity:.15}100%{opacity:0;transform:translate(var(--drift),-75dvh)}}
+
+/* MODAL + WIN */
+.overlay{
+  position:absolute;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:24px;
+  background:rgba(5,2,1,.91);backdrop-filter:blur(3px)
+}
+.overlay.on{display:flex}
+.dialog{
+  width:min(100%,460px);padding:24px;border:1px solid #aa7436;border-radius:17px;
+  background:radial-gradient(circle at 50% 0,#462611,#130905 65%);box-shadow:0 0 40px #000
+}
+.dialog h2{text-align:center;margin:0;color:#efc66d;font-size:30px}
+.dialog p{text-align:center;color:#c1a273;font:800 12px Arial;line-height:1.45}
+.dialogBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:17px}
+.dialogBtns button{min-height:48px;border-radius:10px;border:1px solid #76502b;background:#160b06;color:#d9bb84;font-weight:1000}
+.dialogBtns .danger{border-color:#8c4937;color:#e8aa98}.dialogBtns .gold{border-color:#c18a40;background:#653a17;color:#ffebba}
+.winbox{text-align:center}
+.winbox .crown{font-size:52px;filter:drop-shadow(0 4px 5px #000)}
+.winbox h2{font-size:clamp(38px,10vw,60px)}
+.winbox .winner{font:1000 clamp(20px,5vw,28px) Arial;color:#ffe3a7;margin-top:12px}
+.winbox .final{font:900 14px Arial;color:#c6a873;margin-top:6px}
+
+@media(max-width:380px){
+  .toolbar .topbtn{font-size:10px;padding:8px 6px}
+  .scoreBtns button{min-height:58px}
+  .actions button{min-height:48px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}
+}
+
+/* LONG D&amp;D TURN EVENTS */
+.ddEvent{
+  position:absolute;inset:0;z-index:95;display:none;align-items:center;justify-content:center;
+  padding:22px;pointer-events:none;background:radial-gradient(circle at 50% 48%,rgba(84,39,10,.32),rgba(4,2,1,.82) 72%);
+}
+.ddEvent.on{display:flex;animation:eventBackdrop 2.5s ease both}
+.ddCard{
+  width:min(92%,520px);min-height:220px;padding:28px 20px;text-align:center;position:relative;overflow:hidden;
+  border:2px solid #a97538;border-radius:18px;
+  background:
+    radial-gradient(circle at 50% 18%,rgba(182,94,27,.24),transparent 34%),
+    linear-gradient(#2e170b,#0d0603 72%);
+  box-shadow:0 0 38px rgba(198,119,38,.23),inset 0 0 30px #000;
+  transform:scale(.82);
+  animation:eventCardIn 2.5s cubic-bezier(.2,.8,.2,1) both;
+}
+.ddEvent.dark .ddCard{
+  border-color:#744238;
+  background:
+    radial-gradient(circle at 50% 16%,rgba(104,35,26,.28),transparent 36%),
+    linear-gradient(#23100d,#090303 72%);
+  box-shadow:0 0 42px rgba(117,43,31,.28),inset 0 0 32px #000;
+}
+.ddEvent.legendary .ddCard{
+  border-color:#d5a24d;
+  box-shadow:0 0 52px rgba(232,157,54,.38),inset 0 0 30px #000;
+}
+.ddRune{
+  font-size:clamp(42px,12vw,74px);line-height:1;margin-bottom:10px;
+  filter:drop-shadow(0 0 10px rgba(236,161,70,.4));
+}
+.ddEvent.dark .ddRune{filter:drop-shadow(0 0 11px rgba(139,53,40,.45))}
+.ddTitle{
+  color:#efc66d;font:1000 clamp(28px,8vw,50px) Georgia,serif;
+  letter-spacing:1px;text-shadow:0 4px 6px #000;
+}
+.ddEvent.dark .ddTitle{color:#e1a085}
+.ddSub{
+  margin-top:8px;color:#bda171;font:900 clamp(11px,3vw,15px) Arial;
+  letter-spacing:.5px
+}
+.ddScore{
+  margin-top:14px;color:#ffe3a6;font:1000 clamp(22px,6vw,34px) Arial
+}
+.ddSpark{
+  position:absolute;width:5px;height:5px;border-radius:50%;background:#e8a54d;opacity:0;
+  animation:ddSpark 1.8s ease-out forwards
+}
+.ddEvent.dark .ddSpark{background:#a64d3a}
+@keyframes eventBackdrop{
+  0%{opacity:0}12%{opacity:1}82%{opacity:1}100%{opacity:0}
+}
+@keyframes eventCardIn{
+  0%{opacity:0;transform:scale(.72) rotate(-1deg)}
+  14%{opacity:1;transform:scale(1.04) rotate(.4deg)}
+  24%{transform:scale(1)}
+  82%{opacity:1;transform:scale(1)}
+  100%{opacity:0;transform:scale(.96)}
+}
+@keyframes ddSpark{
+  0%{opacity:0;transform:translate(0,0) scale(.5)}
+  18%{opacity:1}
+  100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.2)}
+}
+
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;main id=&quot;app&quot;&gt;
+  &lt;i class=&quot;ember&quot; style=&quot;left:12%;--d:6s;--delay:-1s;--drift:18px&quot;&gt;&lt;/i&gt;
+  &lt;i class=&quot;ember&quot; style=&quot;left:30%;--d:7.5s;--delay:-5s;--drift:-12px&quot;&gt;&lt;/i&gt;
+  &lt;i class=&quot;ember&quot; style=&quot;left:68%;--d:6.7s;--delay:-3s;--drift:18px&quot;&gt;&lt;/i&gt;
+  &lt;i class=&quot;ember&quot; style=&quot;left:86%;--d:8.4s;--delay:-6s;--drift:-18px&quot;&gt;&lt;/i&gt;
+
+  &lt;div class=&quot;shell&quot;&gt;
+    &lt;div class=&quot;topbar&quot;&gt;&lt;button id=&quot;backToApp&quot; class=&quot;iconbtn&quot; type=&quot;button&quot; aria-label=&quot;Menu&quot;&gt;←&lt;/button&gt;
+      &lt;button id=&quot;sound&quot; class=&quot;iconbtn&quot; type=&quot;button&quot; aria-label=&quot;Zvuky&quot;&gt;🔊&lt;/button&gt;
+      &lt;div class=&quot;brand&quot;&gt;&lt;strong&gt;10K BATTLE&lt;/strong&gt;&lt;small&gt;TAVERN CLASH&lt;/small&gt;&lt;/div&gt;
+      &lt;button id=&quot;lang&quot; class=&quot;iconbtn&quot; type=&quot;button&quot;&gt;CZ&lt;/button&gt;
+    &lt;/div&gt;
+
+    &lt;div id=&quot;toolbar&quot; class=&quot;toolbar&quot; style=&quot;display:none&quot;&gt;
+      &lt;button id=&quot;newGame&quot; class=&quot;topbtn&quot; type=&quot;button&quot;&gt;NOVÁ HRA&lt;/button&gt;
+      &lt;button id=&quot;endGame&quot; class=&quot;topbtn&quot; type=&quot;button&quot;&gt;UKONČIT HRU&lt;/button&gt;
+    &lt;/div&gt;
+
+    &lt;section id=&quot;setup&quot; class=&quot;panel&quot;&gt;
+      &lt;h1&gt;10K BATTLE&lt;/h1&gt;
+      &lt;p id=&quot;setupText&quot;&gt;Vyber počet hráčů a pojmenuj družinu.&lt;/p&gt;
+      &lt;div id=&quot;savedPlayersBox&quot; style=&quot;max-width:450px;margin:0 auto 14px;padding:10px;border:1px solid #654321;border-radius:10px;background:#0b0503aa&quot;&gt;
+        &lt;div id=&quot;savedPlayersTitle&quot; style=&quot;color:#c8aa76;font:900 10px Arial;margin-bottom:7px;letter-spacing:.4px&quot;&gt;ULOŽENÍ HRÁČI&lt;/div&gt;
+        &lt;div id=&quot;savedPlayersList&quot; style=&quot;display:flex;flex-wrap:wrap;gap:6px&quot;&gt;&lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;div id=&quot;count&quot; class=&quot;count&quot;&gt;&lt;/div&gt;
+      &lt;div id=&quot;names&quot; class=&quot;names&quot;&gt;&lt;/div&gt;
+      &lt;button id=&quot;start&quot; class=&quot;start&quot; type=&quot;button&quot;&gt;ZAČÍT BITVU&lt;/button&gt;
+    &lt;/section&gt;
+
+    &lt;section id=&quot;game&quot;&gt;
+      &lt;div class=&quot;statusline&quot;&gt;&lt;span class=&quot;statusdot&quot;&gt;&lt;/span&gt;&lt;span id=&quot;roundInfo&quot;&gt;HRA PROBÍHÁ&lt;/span&gt;&lt;/div&gt;
+      &lt;div id=&quot;players&quot; class=&quot;players&quot;&gt;&lt;/div&gt;
+
+      &lt;div class=&quot;turn panel&quot;&gt;
+        &lt;div id=&quot;turnWho&quot; class=&quot;turnwho&quot;&gt;&lt;/div&gt;
+        &lt;div id=&quot;turnScore&quot; class=&quot;turnscore&quot;&gt;+0&lt;/div&gt;
+        &lt;div class=&quot;progressWrap&quot;&gt;&lt;div id=&quot;progress&quot; class=&quot;progress&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;scoreBtns&quot;&gt;
+        &lt;button type=&quot;button&quot; data-add=&quot;50&quot;&gt;+50&lt;/button&gt;
+        &lt;button type=&quot;button&quot; data-add=&quot;100&quot;&gt;+100&lt;/button&gt;
+        &lt;button type=&quot;button&quot; data-add=&quot;1000&quot;&gt;+1000&lt;/button&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;actions&quot;&gt;
+        &lt;button id=&quot;undo&quot; type=&quot;button&quot;&gt;↩ ZPĚT&lt;/button&gt;
+        &lt;button id=&quot;zero&quot; class=&quot;zero&quot; type=&quot;button&quot;&gt;☠ NIC&lt;/button&gt;
+        &lt;button id=&quot;next&quot; class=&quot;next&quot; type=&quot;button&quot;&gt;DALŠÍ&lt;/button&gt;
+      &lt;/div&gt;
+
+      &lt;div id=&quot;event&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
+    &lt;/section&gt;
+  &lt;/div&gt;
+
+  &lt;div id=&quot;fx&quot; class=&quot;fx&quot;&gt;&lt;/div&gt;
+
+  &lt;div id=&quot;confirm&quot; class=&quot;overlay&quot; role=&quot;dialog&quot; aria-modal=&quot;true&quot;&gt;
+    &lt;div class=&quot;dialog&quot;&gt;
+      &lt;h2 id=&quot;confirmTitle&quot;&gt;Ukončit hru?&lt;/h2&gt;
+      &lt;p id=&quot;confirmText&quot;&gt;Rozehraná hra bude zahozena a vrátíš se k výběru hráčů.&lt;/p&gt;
+      &lt;div class=&quot;dialogBtns&quot;&gt;
+        &lt;button id=&quot;cancelConfirm&quot; type=&quot;button&quot;&gt;ZRUŠIT&lt;/button&gt;
+        &lt;button id=&quot;confirmYes&quot; class=&quot;danger&quot; type=&quot;button&quot;&gt;UKONČIT&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  
+  &lt;div id=&quot;ddEvent&quot; class=&quot;ddEvent&quot;&gt;
+    &lt;div class=&quot;ddCard&quot;&gt;
+      &lt;div id=&quot;ddRune&quot; class=&quot;ddRune&quot;&gt;✦&lt;/div&gt;
+      &lt;div id=&quot;ddTitle&quot; class=&quot;ddTitle&quot;&gt;&lt;/div&gt;
+      &lt;div id=&quot;ddSub&quot; class=&quot;ddSub&quot;&gt;&lt;/div&gt;
+      &lt;div id=&quot;ddScore&quot; class=&quot;ddScore&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+&lt;div id=&quot;win&quot; class=&quot;overlay&quot;&gt;
+    &lt;div class=&quot;dialog winbox&quot;&gt;
+      &lt;div class=&quot;crown&quot;&gt;♛&lt;/div&gt;
+      &lt;h2 id=&quot;winTitle&quot;&gt;VÍTĚZSTVÍ!&lt;/h2&gt;
+      &lt;div id=&quot;winner&quot; class=&quot;winner&quot;&gt;&lt;/div&gt;
+      &lt;div id=&quot;finalScore&quot; class=&quot;final&quot;&gt;&lt;/div&gt;
+      &lt;div class=&quot;dialogBtns&quot;&gt;
+        &lt;button id=&quot;samePlayers&quot; type=&quot;button&quot;&gt;ODVETA&lt;/button&gt;
+        &lt;button id=&quot;newPlayers&quot; class=&quot;gold&quot; type=&quot;button&quot;&gt;NOVÍ HRÁČI&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/main&gt;
+
+&lt;script&gt;
+const $=s=&gt;document.querySelector(s), $$=s=&gt;document.querySelectorAll(s);
+const TXT={
+ cs:{
+  setup:&quot;Vyber počet hráčů a pojmenuj družinu.&quot;,start:&quot;ZAČÍT BITVU&quot;,newGame:&quot;NOVÁ HRA&quot;,endGame:&quot;UKONČIT HRU&quot;,
+  running:&quot;HRA PROBÍHÁ&quot;,player:&quot;Hráč&quot;,turn:&quot;Na tahu&quot;,undo:&quot;↩ ZPĚT&quot;,zero:&quot;☠ NIC&quot;,next:&quot;DALŠÍ&quot;,
+  third:&quot;Třetí NIC! Skóre padá na 0.&quot;,confirmTitle:&quot;Ukončit hru?&quot;,confirmText:&quot;Rozehraná hra bude zahozena a vrátíš se k výběru hráčů.&quot;,
+  cancel:&quot;ZRUŠIT&quot;,end:&quot;UKONČIT&quot;,victory:&quot;VÍTĚZSTVÍ!&quot;,rematch:&quot;ODVETA&quot;,newPlayers:&quot;NOVÍ HRÁČI&quot;,final:&quot;Konečné skóre&quot;,
+  nothing:&quot;NIC&quot;,soundOn:&quot;Zvuky zapnuty&quot;,soundOff:&quot;Zvuky vypnuty&quot;
+ },
+ en:{
+  setup:&quot;Choose the number of players and name your party.&quot;,start:&quot;START BATTLE&quot;,newGame:&quot;NEW GAME&quot;,endGame:&quot;END GAME&quot;,
+  running:&quot;GAME IN PROGRESS&quot;,player:&quot;Player&quot;,turn:&quot;Turn&quot;,undo:&quot;↩ UNDO&quot;,zero:&quot;☠ NOTHING&quot;,next:&quot;NEXT&quot;,
+  third:&quot;Third miss! Score resets to 0.&quot;,confirmTitle:&quot;End game?&quot;,confirmText:&quot;The current game will be discarded and you will return to player setup.&quot;,
+  cancel:&quot;CANCEL&quot;,end:&quot;END GAME&quot;,victory:&quot;VICTORY!&quot;,rematch:&quot;REMATCH&quot;,newPlayers:&quot;NEW PLAYERS&quot;,final:&quot;Final score&quot;,
+  nothing:&quot;NOTHING&quot;,soundOn:&quot;Sound on&quot;,soundOff:&quot;Sound off&quot;
+ }
+};
+let lang=&quot;cs&quot;, playerCount=2, players=[], active=0, turn=0, history=[], soundOn=true, confirmAction=null, winRecorded=false;
+
+function applyLang(){
+ const t=TXT[lang];
+ $(&quot;#lang&quot;).textContent=lang.toUpperCase();
+ $(&quot;#setupText&quot;).textContent=t.setup; $(&quot;#start&quot;).textContent=t.start;
+ $(&quot;#newGame&quot;).textContent=t.newGame; $(&quot;#endGame&quot;).textContent=t.endGame; $(&quot;#roundInfo&quot;).textContent=t.running;
+ $(&quot;#undo&quot;).textContent=t.undo; $(&quot;#zero&quot;).textContent=t.zero; $(&quot;#next&quot;).textContent=t.next;
+ $(&quot;#confirmTitle&quot;).textContent=t.confirmTitle; $(&quot;#confirmText&quot;).textContent=t.confirmText;
+ $(&quot;#cancelConfirm&quot;).textContent=t.cancel; $(&quot;#confirmYes&quot;).textContent=t.end;
+ $(&quot;#winTitle&quot;).textContent=t.victory; $(&quot;#samePlayers&quot;).textContent=t.rematch; $(&quot;#newPlayers&quot;).textContent=t.newPlayers;
+ buildNames(true); renderSavedPlayers(); render();
+}
+$(&quot;#lang&quot;).addEventListener(&quot;click&quot;,()=&gt;{lang=lang===&quot;cs&quot;?&quot;en&quot;:&quot;cs&quot;;applyLang()});
+
+function buildCount(){
+ $(&quot;#count&quot;).innerHTML=&quot;&quot;;
+ for(let i=1;i&lt;=6;i++){
+  const b=document.createElement(&quot;button&quot;); b.type=&quot;button&quot;; b.textContent=i; b.className=i===playerCount?&quot;on&quot;:&quot;&quot;;
+  b.addEventListener(&quot;click&quot;,()=&gt;{playerCount=i;buildCount();buildNames(true)});
+  $(&quot;#count&quot;).appendChild(b);
+ }
+}
+function buildNames(preserve){
+ const old=preserve?[...$$(&quot;#names input&quot;)].map(x=&gt;x.value):[];
+ $(&quot;#names&quot;).innerHTML=&quot;&quot;;
+ for(let i=0;i&lt;playerCount;i++){
+  const input=document.createElement(&quot;input&quot;);
+  input.maxLength=18; input.value=old[i]||`${TXT[lang].player} ${i+1}`;
+  input.setAttribute(&quot;aria-label&quot;,`${TXT[lang].player} ${i+1}`);
+  $(&quot;#names&quot;).appendChild(input);
+ }
+}
+function showSetup(keepNames=true){
+ $(&quot;#confirm&quot;).classList.remove(&quot;on&quot;); $(&quot;#win&quot;).classList.remove(&quot;on&quot;);
+ $(&quot;#game&quot;).style.display=&quot;none&quot;; $(&quot;#toolbar&quot;).style.display=&quot;none&quot;; $(&quot;#setup&quot;).style.display=&quot;block&quot;;
+ players=[]; active=0; turn=0; history=[]; $(&quot;#event&quot;).textContent=&quot;&quot;;
+ buildCount(); buildNames(keepNames); renderSavedPlayers();
+}
+function startGame(namesOverride=null){
+ const names=namesOverride||[...$$(&quot;#names input&quot;)].map((x,i)=&gt;x.value.trim()||`${TXT[lang].player} ${i+1}`);
+ players=names.map(name=&gt;({name,score:0,nic:0}));
+ active=0;turn=0;history=[];winRecorded=false;
+ $(&quot;#setup&quot;).style.display=&quot;none&quot;;$(&quot;#game&quot;).style.display=&quot;block&quot;;$(&quot;#toolbar&quot;).style.display=&quot;flex&quot;;$(&quot;#event&quot;).textContent=&quot;&quot;;
+ sfxStart();render();
+}
+$(&quot;#start&quot;).addEventListener(&quot;click&quot;,()=&gt;startGame());
+
+function snap(){history.push(JSON.stringify({players,active,turn,event:$(&quot;#event&quot;).textContent}))}
+function render(){
+ if(!players.length)return;
+ $(&quot;#players&quot;).innerHTML=players.map((p,i)=&gt;`
+  &lt;div class=&quot;player ${i===active?&quot;active&quot;:&quot;&quot;}&quot;&gt;
+    &lt;div class=&quot;pname&quot;&gt;${escapeHtml(p.name)}&lt;/div&gt;
+    &lt;div class=&quot;pscore&quot;&gt;${p.score.toLocaleString(&quot;cs-CZ&quot;)}&lt;/div&gt;
+    &lt;div class=&quot;pnic&quot;&gt;NIC: ${p.nic}/3&lt;/div&gt;
+  &lt;/div&gt;`).join(&quot;&quot;);
+ $(&quot;#turnWho&quot;).textContent=`${TXT[lang].turn}: ${players[active].name}`;
+ $(&quot;#turnScore&quot;).textContent=&quot;+&quot;+turn.toLocaleString(&quot;cs-CZ&quot;);
+ const projected=Math.min(100,((players[active].score+turn)/10000)*100);
+ $(&quot;#progress&quot;).style.width=projected+&quot;%&quot;;
+}
+function escapeHtml(s){return s.replace(/[&amp;&lt;&gt;&quot;&#x27;]/g,m=&gt;({&quot;&amp;&quot;:&quot;&amp;amp;&quot;,&quot;&lt;&quot;:&quot;&amp;lt;&quot;,&quot;&gt;&quot;:&quot;&amp;gt;&quot;,&#x27;&quot;&#x27;:&quot;&amp;quot;&quot;,&quot;&#x27;&quot;:&quot;&amp;#39;&quot;}[m]))}
+
+$$(&quot;[data-add]&quot;).forEach(b=&gt;b.addEventListener(&quot;click&quot;,()=&gt;{
+ if(!players.length)return;
+ snap(); const v=Number(b.dataset.add); turn+=v; $(&quot;#event&quot;).textContent=&quot;&quot;;
+ scoreFx(v); sfxScore(v); render();
+}));
+$(&quot;#undo&quot;).addEventListener(&quot;click&quot;,()=&gt;{
+ if(!history.length)return;
+ const s=JSON.parse(history.pop()); players=s.players; active=s.active; turn=s.turn; $(&quot;#event&quot;).textContent=s.event||&quot;&quot;;
+ sfxUndo(); render();
+});
+$(&quot;#zero&quot;).addEventListener(&quot;click&quot;,()=&gt;{
+ if(!players.length)return;
+ snap(); const p=players[active]; p.nic++; turn=0;
+ if(p.nic&gt;=3){
+  p.score=0;p.nic=0;$(&quot;#event&quot;).textContent=TXT[lang].third; badFx(&quot;RESET 0&quot;,true); sfxBad(true);
+  showDDEvent(&quot;curse&quot;);
+ }else{
+  $(&quot;#event&quot;).textContent=&quot;&quot;;badFx(TXT[lang].nothing,false);sfxBad(false);
+  showDDEvent(&quot;nothing&quot;);
+ }
+ active=(active+1)%players.length; render();
+});
+$(&quot;#next&quot;).addEventListener(&quot;click&quot;,()=&gt;{
+ if(!players.length||turn===0)return;
+ snap(); const p=players[active], committed=turn;
+ p.score+=turn;p.nic=0;turn=0;$(&quot;#event&quot;).textContent=&quot;&quot;;
+ commitFx(&quot;+&quot;+committed);sfxCommit();
+ const special=eventForPoints(committed);
+ if(p.score&gt;=10000){
+  render();
+  if(special){showDDEvent(special,committed);setTimeout(()=&gt;showWin(p),2100)}
+  else showWin(p);
+  return;
+ }
+ active=(active+1)%players.length;render();
+ if(special)showDDEvent(special,committed);
+});
+
+function askConfirm(action){
+ confirmAction=action; $(&quot;#confirm&quot;).classList.add(&quot;on&quot;);
+}
+$(&quot;#endGame&quot;).addEventListener(&quot;click&quot;,()=&gt;askConfirm(&quot;end&quot;));
+$(&quot;#newGame&quot;).addEventListener(&quot;click&quot;,()=&gt;askConfirm(&quot;new&quot;));
+$(&quot;#cancelConfirm&quot;).addEventListener(&quot;click&quot;,()=&gt;{$(&quot;#confirm&quot;).classList.remove(&quot;on&quot;);confirmAction=null});
+$(&quot;#confirmYes&quot;).addEventListener(&quot;click&quot;,()=&gt;{
+ $(&quot;#confirm&quot;).classList.remove(&quot;on&quot;);
+ showSetup(confirmAction===&quot;new&quot;);
+ confirmAction=null;
+});
+
+function showWin(p){
+ if(!winRecorded){appRecordWin(p.name);winRecorded=true}
+ $(&quot;#winner&quot;).textContent=p.name;
+ $(&quot;#finalScore&quot;).textContent=`${TXT[lang].final}: ${p.score.toLocaleString(&quot;cs-CZ&quot;)}`;
+ $(&quot;#win&quot;).classList.add(&quot;on&quot;); sfxWin(); winBurst();
+}
+$(&quot;#samePlayers&quot;).addEventListener(&quot;click&quot;,()=&gt;{
+ const names=players.map(p=&gt;p.name);$(&quot;#win&quot;).classList.remove(&quot;on&quot;);startGame(names);
+});
+$(&quot;#newPlayers&quot;).addEventListener(&quot;click&quot;,()=&gt;showSetup(false));
+
+
+/* LONG D&amp;D EVENTS — triggered on NEXT / NOTHING */
+let ddTimer=null;
+function ddText(kind,points=0){
+ const cs=lang===&quot;cs&quot;;
+ if(kind===&quot;legendary&quot;) return {
+   rune:&quot;🐉&quot;,
+   title:cs?&quot;DRAČÍ PŘÍZEŇ&quot;:&quot;DRAGON&#x27;S FAVOR&quot;,
+   sub:cs?&quot;Hod, o kterém se bude zpívat u ohně.&quot;:&quot;A roll worthy of tavern legends.&quot;,
+   score:&quot;+&quot;+points
+ };
+ if(kind===&quot;critical&quot;) return {
+   rune:&quot;⚔&quot;,
+   title:cs?&quot;KRITICKÝ HOD&quot;:&quot;CRITICAL ROLL&quot;,
+   sub:cs?&quot;Kostky stojí při tobě.&quot;:&quot;The dice are on your side.&quot;,
+   score:&quot;+&quot;+points
+ };
+ if(kind===&quot;arcane&quot;) return {
+   rune:&quot;✦&quot;,
+   title:cs?&quot;ARKÁNNÍ ZÁSAH&quot;:&quot;ARCANE STRIKE&quot;,
+   sub:cs?&quot;Magie stolu se probouzí.&quot;:&quot;The magic of the table awakens.&quot;,
+   score:&quot;+&quot;+points
+ };
+ if(kind===&quot;nothing&quot;) return {
+   rune:&quot;☠&quot;,
+   title:cs?&quot;PRÁZDNÝ HOD&quot;:&quot;EMPTY ROLL&quot;,
+   sub:cs?&quot;Bohové kostek se odvrátili.&quot;:&quot;The dice gods look away.&quot;,
+   score:cs?&quot;NIC&quot;:&quot;NOTHING&quot;
+ };
+ return {
+   rune:&quot;☠&quot;,
+   title:cs?&quot;KLETBA TŘÍ NIC&quot;:&quot;CURSE OF THREE&quot;,
+   sub:cs?&quot;Temnota si bere celé skóre.&quot;:&quot;Darkness claims the entire score.&quot;,
+   score:&quot;RESET 0&quot;
+ };
+}
+function ddSound(kind){
+ if(kind===&quot;legendary&quot;){
+  [196,247,294,392,494].forEach((f,i)=&gt;tone(f,.42,&quot;triangle&quot;,.04,i*.11));
+  tone(98,.65,&quot;sawtooth&quot;,.018,0);
+ }else if(kind===&quot;critical&quot;){
+  tone(220,.16,&quot;triangle&quot;,.035);
+  tone(330,.2,&quot;triangle&quot;,.035,.08);
+  tone(494,.28,&quot;triangle&quot;,.03,.17);
+ }else if(kind===&quot;arcane&quot;){
+  tone(262,.18,&quot;sine&quot;,.03);
+  tone(392,.22,&quot;sine&quot;,.03,.1);
+  tone(659,.3,&quot;sine&quot;,.025,.22);
+ }else if(kind===&quot;nothing&quot;){
+  tone(145,.28,&quot;sawtooth&quot;,.028);
+  tone(110,.34,&quot;sine&quot;,.02,.12);
+ }else{
+  tone(110,.42,&quot;sawtooth&quot;,.035);
+  tone(73,.55,&quot;sawtooth&quot;,.03,.08);
+  tone(55,.68,&quot;sine&quot;,.02,.18);
+ }
+}
+function spawnDDSparks(dark=false){
+ const card=$(&quot;#ddEvent .ddCard&quot;);
+ for(let i=0;i&lt;22;i++){
+  const sp=document.createElement(&quot;i&quot;);
+  sp.className=&quot;ddSpark&quot;;
+  sp.style.left=(40+Math.random()*20)+&quot;%&quot;;
+  sp.style.top=(38+Math.random()*24)+&quot;%&quot;;
+  sp.style.setProperty(&quot;--dx&quot;,(-120+Math.random()*240)+&quot;px&quot;);
+  sp.style.setProperty(&quot;--dy&quot;,(-110+Math.random()*220)+&quot;px&quot;);
+  sp.style.animationDelay=(Math.random()*.35)+&quot;s&quot;;
+  card.appendChild(sp);
+  setTimeout(()=&gt;sp.remove(),2200);
+ }
+}
+function showDDEvent(kind,points=0){
+ clearTimeout(ddTimer);
+ const e=$(&quot;#ddEvent&quot;),t=ddText(kind,points);
+ e.className=&quot;ddEvent &quot;+(kind===&quot;nothing&quot;||kind===&quot;curse&quot;?&quot;dark &quot;:&quot;&quot;)+(kind===&quot;legendary&quot;?&quot;legendary&quot;:&quot;&quot;);
+ $(&quot;#ddRune&quot;).textContent=t.rune;
+ $(&quot;#ddTitle&quot;).textContent=t.title;
+ $(&quot;#ddSub&quot;).textContent=t.sub;
+ $(&quot;#ddScore&quot;).textContent=t.score;
+ void e.offsetWidth;
+ e.classList.add(&quot;on&quot;);
+ ddSound(kind);
+ spawnDDSparks(kind===&quot;nothing&quot;||kind===&quot;curse&quot;);
+ if(navigator.vibrate){
+  if(kind===&quot;legendary&quot;) navigator.vibrate([80,50,80,50,140]);
+  else if(kind===&quot;curse&quot;) navigator.vibrate([120,60,180]);
+  else navigator.vibrate(45);
+ }
+ ddTimer=setTimeout(()=&gt;{e.classList.remove(&quot;on&quot;)},2500);
+}
+function eventForPoints(points){
+ if(points&gt;=3000)return &quot;legendary&quot;;
+ if(points&gt;=2000)return &quot;critical&quot;;
+ if(points&gt;=1000)return &quot;arcane&quot;;
+ return null;
+}
+
+/* AUDIO */
+let ac=null;
+function tone(freq,dur=.08,type=&quot;triangle&quot;,gain=.035,delay=0){
+ if(!soundOn)return;
+ try{
+  const AC=window.AudioContext||window.webkitAudioContext; ac=ac||new AC();
+  const o=ac.createOscillator(),g=ac.createGain(),t=ac.currentTime+delay;
+  o.type=type;o.frequency.setValueAtTime(freq,t);g.gain.setValueAtTime(gain,t);g.gain.exponentialRampToValueAtTime(.001,t+dur);
+  o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+dur);
+ }catch(e){}
+}
+function sfxScore(v){if(v===50)tone(310,.07);else if(v===100){tone(390,.08);tone(470,.08,&quot;triangle&quot;,.025,.05)}else{tone(440,.09);tone(620,.1,&quot;triangle&quot;,.03,.06);tone(820,.12,&quot;triangle&quot;,.025,.12)}}
+function sfxCommit(){tone(330,.07,&quot;sine&quot;,.025);tone(520,.11,&quot;sine&quot;,.025,.06)}
+function sfxBad(third){tone(third?105:145,third?.28:.18,&quot;sawtooth&quot;,.025);if(third)tone(75,.32,&quot;sawtooth&quot;,.02,.08)}
+function sfxUndo(){tone(260,.07,&quot;sine&quot;,.02);tone(190,.09,&quot;sine&quot;,.018,.05)}
+function sfxStart(){tone(294,.08,&quot;triangle&quot;,.025);tone(392,.1,&quot;triangle&quot;,.03,.08);tone(523,.13,&quot;triangle&quot;,.03,.16)}
+function sfxWin(){[392,494,587,784,988].forEach((f,i)=&gt;tone(f,.35,&quot;triangle&quot;,.034,i*.09))}
+$(&quot;#sound&quot;).addEventListener(&quot;click&quot;,()=&gt;{
+ soundOn=!soundOn;$(&quot;#sound&quot;).textContent=soundOn?&quot;🔊&quot;:&quot;🔇&quot;;
+});
+
+/* VISUAL FX */
+function animateFx(text,kind){const e=$(&quot;#fx&quot;);e.textContent=text;e.className=&quot;fx&quot;;void e.offsetWidth;e.classList.add(kind)}
+function scoreFx(v){animateFx(&quot;+&quot;+v,&quot;score&quot;)}
+function commitFx(v){animateFx(v,&quot;commit&quot;)}
+function badFx(text,shake){animateFx(text,&quot;bad&quot;);if(shake){$(&quot;#game&quot;).classList.add(&quot;shake&quot;);setTimeout(()=&gt;$(&quot;#game&quot;).classList.remove(&quot;shake&quot;),360)}}
+function winBurst(){
+ const app=$(&quot;#app&quot;);
+ for(let i=0;i&lt;18;i++){
+  const d=document.createElement(&quot;i&quot;);d.className=&quot;ember&quot;;
+  d.style.left=(20+Math.random()*60)+&quot;%&quot;;d.style.bottom=&quot;38%&quot;;d.style.setProperty(&quot;--d&quot;,(1.2+Math.random()*1.1)+&quot;s&quot;);
+  d.style.setProperty(&quot;--delay&quot;,&quot;0s&quot;);d.style.setProperty(&quot;--drift&quot;,(-45+Math.random()*90)+&quot;px&quot;);
+  app.appendChild(d);setTimeout(()=&gt;d.remove(),2400);
+ }
+}
+
+/* TAVERN CLASH APP INTEGRATION */
+const APP_PLAYER_DB_KEY=&quot;tavern_clash_players_v1&quot;;
+const APP_STATS_DB_KEY=&quot;tavern_clash_stats_v1&quot;;
+
+function appLoadPlayers(){
+ try{
+  const raw=localStorage.getItem(APP_PLAYER_DB_KEY);
+  const arr=raw?JSON.parse(raw):[];
+  return Array.isArray(arr)?arr.filter(x=&gt;x&amp;&amp;typeof x.name===&quot;string&quot;):[];
+ }catch(e){return []}
+}
+function appLoadStats(){
+ try{
+  const raw=localStorage.getItem(APP_STATS_DB_KEY);
+  const obj=raw?JSON.parse(raw):{};
+  return obj&amp;&amp;typeof obj===&quot;object&quot;&amp;&amp;!Array.isArray(obj)?obj:{};
+ }catch(e){return {}}
+}
+function appRecordWin(playerName){
+ if(!playerName)return;
+ const db=appLoadStats();
+ if(!db[playerName])db[playerName]={};
+ db[playerName].tenk=(Number(db[playerName].tenk)||0)+1;
+ localStorage.setItem(APP_STATS_DB_KEY,JSON.stringify(db));
+ try{parent.postMessage({type:&quot;tc-stats-updated&quot;},&quot;*&quot;)}catch(e){}
+}
+function renderSavedPlayers(){
+ const box=$(&quot;#savedPlayersBox&quot;),list=$(&quot;#savedPlayersList&quot;),title=$(&quot;#savedPlayersTitle&quot;);
+ if(!box||!list)return;
+ const saved=appLoadPlayers();
+ title.textContent=lang===&quot;cs&quot;?&quot;ULOŽENÍ HRÁČI&quot;:&quot;SAVED PLAYERS&quot;;
+ if(!saved.length){
+  box.style.display=&quot;none&quot;;
+  return;
+ }
+ box.style.display=&quot;block&quot;;
+ list.innerHTML=&quot;&quot;;
+ saved.forEach(p=&gt;{
+  const b=document.createElement(&quot;button&quot;);
+  b.type=&quot;button&quot;;
+  b.textContent=p.name;
+  b.style.cssText=&quot;border:1px solid #7c522a;border-radius:8px;background:#160b06;color:#d9bb84;padding:7px 9px;font:900 11px Arial&quot;;
+  b.addEventListener(&quot;click&quot;,()=&gt;{
+    const inputs=[...$$(&quot;#names input&quot;)];
+    const used=inputs.find(x=&gt;x.value===p.name);
+    if(used)return;
+    const target=inputs.find(x=&gt;/^Hráč \d+$|^Player \d+$/.test(x.value)||!x.value.trim()) || inputs[0];
+    if(target){target.value=p.name;target.focus()}
+  });
+  list.appendChild(b);
+ });
+}
+$(&quot;#backToApp&quot;).addEventListener(&quot;click&quot;,()=&gt;{
+ try{parent.postMessage({type:&quot;tc-close-10k&quot;},&quot;*&quot;)}catch(e){}
+});
+
+buildCount();buildNames(false);applyLang();renderSavedPlayers();
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;"></iframe>
+</section>
+
+<script>
+const T={
+cs:{choose:"Vyber počet hráčů a pojmenuj družinu.",start:"ZAČÍT BITVU",undo:"↩ ZPĚT",nothing:"☠ NIC",next:"DALŠÍ",victory:"VÍTĚZSTVÍ!",again:"NOVÁ BITVA",player:"Hráč",turn:"Na tahu",third:"Třetí NIC — skóre padá na 0!",musicOn:"Hudba zapnuta",musicOff:"Hudba vypnuta"},
+en:{choose:"Choose the number of players and name your party.",start:"START BATTLE",undo:"↩ UNDO",nothing:"☠ NOTHING",next:"NEXT",victory:"VICTORY!",again:"NEW BATTLE",player:"Player",turn:"Turn",third:"Third miss — score resets to 0!",musicOn:"Music on",musicOff:"Music off"}
+};
+const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
+let lang=localStorage.getItem("tc_lang")||"cs", count=2, players=[], active=0, turn=0, history=[], timer;
+
+const PLAYER_TXT={
+ cs:{title:"HRÁČI",button:"HRÁČI",placeholder:"Jméno hráče",add:"PŘIDAT",
+     hint:"Hráči se ukládají v tomto zařízení a později je vybereš v jednotlivých hrách.",
+     empty:"Zatím tu není žádný hráč. Přidej první jméno.",duplicate:"Tento hráč už v seznamu je.",added:"Hráč přidán"},
+ en:{title:"PLAYERS",button:"PLAYERS",placeholder:"Player name",add:"ADD",
+     hint:"Players are saved on this device and can later be selected in individual games.",
+     empty:"No players yet. Add the first name.",duplicate:"This player is already in the list.",added:"Player added"}
+};
+const PLAYER_DB_KEY="tavern_clash_players_v1";
+
+const STATS_DB_KEY="tavern_clash_stats_v1";
+const STATS_TXT={
+ cs:{button:"STATISTIKY",title:"STATISTIKY",sumTitle:"VÝHRY HRÁČŮ",sumSub:"Počet vítězství v jednotlivých hrách.",empty:"Zatím nejsou zaznamenaná žádná vítězství.",wins:"výher",reset:"RESET STATISTIK",resetTitle:"Resetovat statistiky?",resetText:"Všechna zaznamenaná vítězství budou vynulována. Tuto akci nelze vrátit zpět.",cancel:"ZRUŠIT",confirm:"RESETOVAT"},
+ en:{button:"STATISTICS",title:"STATISTICS",sumTitle:"PLAYER WINS",sumSub:"Number of wins in each game.",empty:"No victories recorded yet.",wins:"wins",reset:"RESET STATISTICS",resetTitle:"Reset statistics?",resetText:"All recorded victories will be reset to zero. This action cannot be undone.",cancel:"CANCEL",confirm:"RESET"}
+};
+function loadStatsDB(){
+ try{
+   const raw=localStorage.getItem(STATS_DB_KEY);
+   const obj=raw?JSON.parse(raw):{};
+   return obj && typeof obj==="object" && !Array.isArray(obj) ? obj : {};
+ }catch(e){return {}}
+}
+function saveStatsDB(obj){localStorage.setItem(STATS_DB_KEY,JSON.stringify(obj))}
+function recordWin(playerName,gameId){
+ if(!playerName||!gameId)return;
+ const db=loadStatsDB();
+ if(!db[playerName])db[playerName]={};
+ db[playerName][gameId]=(Number(db[playerName][gameId])||0)+1;
+ saveStatsDB(db);
+}
+function gameLabel(id){
+ const map={tenk:"10K BATTLE",thirty:"30",darts:"DARTS",canasta:"CANASTA",dice:"DICE",foosball:"FOOSBALL",billiards:"BILLIARDS"};
+ return map[id]||id.toUpperCase();
+}
+function renderStats(){
+ const t=STATS_TXT[lang],db=loadStatsDB();
+ $("#statsMenuHit").textContent=t.button;
+ $("#statsTitle").textContent=t.title;
+ $("#statsSummaryTitle").textContent=t.sumTitle;
+ $("#statsSummarySub").textContent=t.sumSub;
+ $("#statsReset").textContent=t.reset;
+ $("#statsResetTitle").textContent=t.resetTitle;
+ $("#statsResetText").textContent=t.resetText;
+ $("#statsResetNo").textContent=t.cancel;
+ $("#statsResetYes").textContent=t.confirm;
+ const rows=Object.entries(db).map(([name,games])=>{
+   const entries=Object.entries(games||{}).filter(([,v])=>Number(v)>0);
+   const total=entries.reduce((a,[,v])=>a+Number(v),0);
+   return {name,entries,total};
+ }).filter(x=>x.total>0).sort((a,b)=>b.total-a.total || a.name.localeCompare(b.name));
+ if(!rows.length){
+   $("#statsList").innerHTML=`<div class="statsEmpty">${t.empty}</div>`;
+   return;
+ }
+ $("#statsList").innerHTML=rows.map(r=>`
+   <div class="statRow">
+     <div class="statPlayer"><span>${escapeP(r.name)}</span><span class="statTotal">${r.total}</span></div>
+     <div class="statGames">
+       ${r.entries.map(([game,wins])=>`<span class="statChip">${gameLabel(game)}: ${wins}</span>`).join("")}
+     </div>
+   </div>`).join("");
+}
+function openStats(){
+ $("#menu").classList.remove("active");
+ $("#statsScreen").classList.add("active");
+ renderStats();
+}
+$("#statsMenuHit").addEventListener("click",openStats);
+$("#statsBack").addEventListener("click",()=>{
+ $("#statsScreen").classList.remove("active");
+ $("#menu").classList.add("active");
+});
+$("#statsReset").addEventListener("click",()=>{
+ $("#statsResetConfirm").classList.add("on");
+});
+$("#statsResetNo").addEventListener("click",()=>{
+ $("#statsResetConfirm").classList.remove("on");
+});
+$("#statsResetYes").addEventListener("click",()=>{
+ localStorage.removeItem(STATS_DB_KEY);
+ $("#statsResetConfirm").classList.remove("on");
+ renderStats();
+});
+
+
+function loadPlayerDB(){
+ try{
+  const raw=localStorage.getItem(PLAYER_DB_KEY);
+  const arr=raw?JSON.parse(raw):[];
+  return Array.isArray(arr)?arr.filter(x=>x&&typeof x.name==="string"):[];
+ }catch(e){return []}
+}
+function savePlayerDB(arr){localStorage.setItem(PLAYER_DB_KEY,JSON.stringify(arr))}
+function playerInitial(name){
+ return (name.trim()[0]||"?").toUpperCase();
+}
+function escapeP(s){
+ return s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+}
+function renderPlayers(){
+ const x=PLAYER_TXT[lang], list=loadPlayerDB();
+ $("#playersTitle").textContent=x.title;
+ $("#playersMenuHit").textContent=x.button;
+ $("#newPlayerName").placeholder=x.placeholder;
+ $("#addPlayer").textContent=x.add;
+ $("#playerHint").textContent=x.hint;
+ if(!list.length){
+  $("#playersList").innerHTML=`<div class="playersEmpty">${x.empty}</div>`;
+  return;
+ }
+ $("#playersList").innerHTML=list.map((p,i)=>`
+   <div class="playerRow">
+     <div class="playerAvatar">${escapeP(playerInitial(p.name))}</div>
+     <div class="playerInfo">
+       <div class="playerName">${escapeP(p.name)}</div>
+       <div class="playerMeta">TAVERN CLASH</div>
+     </div>
+     <button class="playerDelete" type="button" data-del="${i}" aria-label="Delete">×</button>
+   </div>`).join("");
+ document.querySelectorAll("[data-del]").forEach(btn=>btn.addEventListener("click",()=>{
+   const idx=Number(btn.dataset.del), arr=loadPlayerDB();
+   if(Number.isInteger(idx)&&idx>=0&&idx<arr.length){arr.splice(idx,1);savePlayerDB(arr);renderPlayers()}
+ }));
+}
+function openPlayers(){
+ $("#menu").classList.remove("active");
+ $("#playersScreen").classList.add("active");
+ renderPlayers();
+ renderStats();
+}
+$("#playersMenuHit").addEventListener("click",openPlayers);
+$("#playersBack").addEventListener("click",()=>{
+ $("#playersScreen").classList.remove("active");
+ $("#menu").classList.add("active");
+});
+function addPlayer(){
+ const input=$("#newPlayerName"), name=input.value.trim();
+ if(!name)return;
+ const arr=loadPlayerDB();
+ if(arr.some(p=>p.name.localeCompare(name,undefined,{sensitivity:"accent"})===0)){
+   toast(PLAYER_TXT[lang].duplicate);return;
+ }
+ arr.push({name,createdAt:Date.now()});
+ savePlayerDB(arr);input.value="";renderPlayers();toast(PLAYER_TXT[lang].added);
+}
+$("#addPlayer").addEventListener("click",addPlayer);
+$("#newPlayerName").addEventListener("keydown",e=>{if(e.key==="Enter")addPlayer()});
+
+
+const EXACT_MENU_TXT={
+ cs:{dice:"KOSTKY",cards:"KARTY",darts:"ŠIPKY",tenk:"Bodovací hra do 10 000",empty:"Tady zatím žádná hra není."},
+ en:{dice:"DICE",cards:"CARDS",darts:"DARTS",tenk:"Score race to 10,000",empty:"No game here yet."}
+};
+function syncExactMenu(){
+ const x=EXACT_MENU_TXT[lang];
+ $("#diceLive").textContent=x.dice;
+ $("#cardsLive").textContent=x.cards;
+ $("#dartsLive").textContent=x.darts;
+ localStorage.setItem("tc_lang",lang);
+ renderPlayers();
+}
+$("#czArtHit").onclick=()=>{lang="cs";syncExactMenu();applyLang();toast("Čeština")};
+$("#enArtHit").onclick=()=>{lang="en";syncExactMenu();applyLang();toast("English")};
+
+async function artMusicToggle(){
+ musicWanted=!musicWanted;
+ localStorage.setItem("tc_music",musicWanted?"on":"off");
+ if(musicWanted){await playMusic();toast(T[lang].musicOn)}
+ else{music.pause();toast(T[lang].musicOff)}
+}
+$("#musicArtHit").onclick=artMusicToggle;
+
+$("#fsArtHit").onclick=async()=>{
+ try{
+  if(!document.fullscreenElement){await document.documentElement.requestFullscreen()}
+  else{await document.exitFullscreen()}
+ }catch(e){}
+};
+
+function openExactCategory(cat){
+ const x=EXACT_MENU_TXT[lang];
+ $("#menu").classList.remove("active");
+ $("#categoryScreen").classList.add("active");
+ $("#catTitleExact").textContent=cat==="dice"?x.dice:cat==="cards"?x.cards:x.darts;
+ if(cat==="dice"){
+  $("#catGamesExact").innerHTML=`
+   <button id="go10kExact" class="catGameExact"><strong>10K BATTLE</strong><span>${x.tenk}</span></button>
+   <button id="go30Exact" class="catGameExact"><strong>30</strong><span>${lang==="cs"?"Souboj o poslední život":"Last life standing"}</span></button>`;
+  $("#go10kExact").onclick=()=>openLocked10K();
+  $("#go30Exact").onclick=()=>openGame30();
+ }else{
+  $("#catGamesExact").innerHTML=`<div class="catEmptyExact">${x.empty}</div>`;
+ }
+}
+$("#diceArtHit").onclick=()=>openExactCategory("dice");
+$("#cardsArtHit").onclick=()=>openExactCategory("cards");
+$("#dartsArtHit").onclick=()=>openExactCategory("darts");
+$("#catBackExact").onclick=()=>{
+ $("#categoryScreen").classList.remove("active");
+ $("#menu").classList.add("active");
+ syncExactMenu();
+};
+
+const music=$("#music"); music.volume=.22;
+
+/* 10K sound/visual feedback only */
+let tcAudio=null;
+function tcTone(freq,dur=.08,type="triangle",gain=.035,delay=0){
+ try{
+  const AC=window.AudioContext||window.webkitAudioContext;
+  tcAudio=tcAudio||new AC();
+  const o=tcAudio.createOscillator(),g=tcAudio.createGain(),t=tcAudio.currentTime+delay;
+  o.type=type;o.frequency.setValueAtTime(freq,t);
+  g.gain.setValueAtTime(gain,t);g.gain.exponentialRampToValueAtTime(.001,t+dur);
+  o.connect(g);g.connect(tcAudio.destination);o.start(t);o.stop(t+dur);
+ }catch(e){}
+}
+function tcFx(text,kind="score"){
+ const el=$("#gameFx");el.textContent=text;el.className="";void el.offsetWidth;el.className=kind;
+}
+function tcScoreSfx(v){
+ if(v===50){tcTone(310,.07)}
+ else if(v===100){tcTone(390,.08);tcTone(470,.07,"triangle",.025,.045)}
+ else{tcTone(440,.09);tcTone(620,.10,"triangle",.03,.06);tcTone(820,.12,"triangle",.025,.12)}
+ tcFx("+"+v,"score");if(navigator.vibrate)navigator.vibrate(v===1000?35:18);
+}
+function tcCommitSfx(points){
+ tcTone(330,.07,"sine",.025);tcTone(520,.11,"sine",.025,.06);tcFx("+"+points,"commit");
+}
+function tcNothingSfx(third=false){
+ tcTone(third?105:145,third?.28:.18,"sawtooth",.025);
+ if(third)tcTone(75,.32,"sawtooth",.02,.08);
+ tcFx(third?"RESET 0":"NIC","bad");
+ if(third){$("#play").classList.add("tc-shake");setTimeout(()=>$("#play").classList.remove("tc-shake"),340)}
+ if(navigator.vibrate)navigator.vibrate(third?[70,40,100]:35);
+}
+function tcWinSfx(){
+ [392,494,587,784].forEach((f,i)=>tcTone(f,.34,"triangle",.035,i*.1));
+ if(navigator.vibrate)navigator.vibrate([80,45,80,45,160]);
+}
+
+let musicWanted=localStorage.getItem("tc_music")!=="off";
+async function playMusic(){if(!musicWanted)return;try{await music.play()}catch(e){}}
+document.addEventListener("pointerdown",playMusic,{once:true});
+function toast(t){clearTimeout(timer);$("#toast").textContent=t;$("#toast").classList.add("show");timer=setTimeout(()=>$("#toast").classList.remove("show"),1200)}
+async function toggleMusic(e){
+ if(e)e.stopPropagation();
+ musicWanted=!musicWanted;
+ localStorage.setItem("tc_music",musicWanted?"on":"off");
+   if(musicWanted){await playMusic();toast(T[lang].musicOn)}
+ else{music.pause();toast(T[lang].musicOff)}
+}
+$("#back").onclick=()=>{$("#game").classList.remove("active");openExactCategory("dice")};
+$("#gameLang").onclick=()=>{lang=lang==="cs"?"en":"cs";localStorage.setItem("tc_lang",lang);applyLang();syncExactMenu()};
+function applyLang(){
+ document.documentElement.lang=lang; $$("[data-t]").forEach(e=>e.textContent=T[lang][e.dataset.t]);$("#gameLang").textContent=lang.toUpperCase();buildNames(false);render()
+}
+function buildCount(){
+ $("#count").innerHTML="";
+ for(let i=1;i<=6;i++){const b=document.createElement("button");b.textContent=i;b.className=i===count?"on":"";b.onclick=()=>{count=i;buildCount();buildNames(true)};$("#count").appendChild(b)}
+}
+function buildNames(preserve=true){
+ const old=preserve?[...$$("#names input")].map(x=>x.value):[];
+ $("#names").innerHTML="";
+ for(let i=0;i<count;i++){const x=document.createElement("input");x.maxLength=18;x.value=old[i]||`${T[lang].player} ${i+1}`;$("#names").appendChild(x)}
+}
+$("#start").onclick=()=>{
+ players=[...$$("#names input")].map((x,i)=>({name:x.value.trim()||`${T[lang].player} ${i+1}`,score:0,nic:0}));
+ active=0;turn=0;history=[];$("#setup").style.display="none";$("#play").style.display="block";$("#event").textContent="";render()
+};
+function snapshot(){history.push(JSON.stringify({players,active,turn,event:$("#event").textContent}))}
+function render(){
+ if(!players.length)return;
+ $("#players").innerHTML=players.map((p,i)=>`<div class="player ${i===active?"active":""}"><div class="pn">${esc(p.name)}</div><div class="ps">${p.score.toLocaleString("cs-CZ")}</div><div class="nic">NIC: ${p.nic}/3</div></div>`).join("");
+ $("#turnWho").textContent=`${T[lang].turn}: ${players[active].name}`;$("#turnScore").textContent="+"+turn.toLocaleString("cs-CZ")
+}
+function esc(s){return s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+$$("[data-add]").forEach(b=>b.onclick=()=>{snapshot();const _v=Number(b.dataset.add);turn+=_v;$("#event").textContent="";tcScoreSfx(_v);render()});
+$("#undo").onclick=()=>{if(!history.length)return;const s=JSON.parse(history.pop());players=s.players;active=s.active;turn=s.turn;$("#event").textContent=s.event||"";render()};
+$("#nothing").onclick=()=>{
+ if(!players.length)return;snapshot();const p=players[active];p.nic++;turn=0;
+ if(p.nic>=3){p.score=0;p.nic=0;$("#event").textContent=T[lang].third;tcNothingSfx(true)}else{$("#event").textContent="";tcNothingSfx(false)};
+ active=(active+1)%players.length;render()
+};
+$("#next").onclick=()=>{
+ if(!players.length||turn===0)return;snapshot();const p=players[active];const _committed=turn;p.score+=turn;p.nic=0;turn=0;$("#event").textContent="";tcCommitSfx(_committed);
+ if(p.score>=10000){tcWinSfx();$("#winner").textContent=`${p.name} — ${p.score.toLocaleString("cs-CZ")}`;$("#win").classList.add("on");render();return}
+ active=(active+1)%players.length;render()
+};
+$("#again").onclick=()=>{$("#win").classList.remove("on");$("#play").style.display="none";$("#setup").style.display="block";players=[];history=[];buildCount();buildNames(false)};
+buildCount();buildNames(false);applyLang();syncExactMenu();renderPlayers();renderStats();playMusic();
+
+function openLocked10K(){
+ const host=$("#game10kHost");
+ host.classList.add("active");
+}
+document.addEventListener("click",e=>{
+ const btn=e.target.closest("#go10kExact,#go10k,.game-entry,.catGameExact,.catGame,.gameEntry");
+ if(!btn)return;
+ const txt=(btn.textContent||"").toUpperCase();
+ if(txt.includes("10K BATTLE")){
+  e.preventDefault();
+  e.stopPropagation();
+  openLocked10K();
+ }
+},true);
+
+window.addEventListener("message",e=>{
+ const d=e.data||{};
+ if(d.type==="tc-close-10k"){
+   $("#game10kHost").classList.remove("active");
+   renderStats();
+ }
+ if(d.type==="tc-stats-updated"){
+   renderStats();
+ }
+});
+
+
+function openGame30(){
+ const host=document.getElementById("game30Host");
+ const frame=document.getElementById("game30Frame");
+ host.style.display="block";
+ let list=[];
+ try{
+   const raw=JSON.parse(localStorage.getItem("tavern_clash_players_v1")||"[]");
+   list=raw.map(x=>typeof x==="string"?x:x&&x.name).filter(Boolean);
+ }catch(e){}
+ setTimeout(()=>{try{frame.contentWindow.postMessage({type:"tc30-players",players:list},"*")}catch(e){}},80);
+}
+window.addEventListener("message",e=>{
+ const d=e.data||{};
+ if(d.type==="tc30-ready"){
+   let list=[];
+   try{
+     const raw=JSON.parse(localStorage.getItem("tavern_clash_players_v1")||"[]");
+     list=raw.map(x=>typeof x==="string"?x:x&&x.name).filter(Boolean);
+   }catch(_){}
+   try{e.source.postMessage({type:"tc30-players",players:list},"*")}catch(_){}
+ }
+ if(d.type==="tc30-close"){
+   document.getElementById("game30Host").style.display="none";
+   if(typeof renderStats==="function")renderStats();
+ }
+ if(d.type==="tc30-win"&&d.player){
+   if(typeof recordWin==="function"){recordWin(d.player,"thirty");}
+   else{
+     try{
+       const k="tavern_clash_stats_v1",db=JSON.parse(localStorage.getItem(k)||"{}");
+       db[d.player]=db[d.player]||{};db[d.player].thirty=(+db[d.player].thirty||0)+1;
+       localStorage.setItem(k,JSON.stringify(db));
+     }catch(_){}
+   }
+   if(typeof renderStats==="function")renderStats();
+ }
+});
+
+</script>
+
+<section id="game30Host" style="position:fixed;inset:0;z-index:100000;background:#050201;display:none">
+  <iframe id="game30Frame" title="30" style="display:block;width:100%;height:100%;border:0;background:#050201" srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;cs&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1,viewport-fit=cover&quot;&gt;
+&lt;title&gt;TAVERN CLASH — 30&lt;/title&gt;
+&lt;style&gt;
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#050201;color:#efd39a;font-family:Georgia,serif}
+button,input{font:inherit}button{cursor:pointer}
+#app{min-height:100dvh;max-width:768px;margin:auto;position:relative;overflow:hidden;background:linear-gradient(#080402d9,#020101f5),url(&quot;assets/asset-1-c7aa3583019c.png&quot;) center/cover}
+.shell{min-height:100dvh;padding:max(14px,env(safe-area-inset-top)) 13px max(14px,env(safe-area-inset-bottom));display:flex;flex-direction:column}
+.top{display:flex;align-items:center;gap:8px}.brand{flex:1;text-align:center}.brand b{display:block;color:#efc66d;font-size:34px;text-shadow:0 4px 5px #000}.brand small{font:900 9px Arial;color:#9f825d;letter-spacing:1.4px}
+.icon{width:43px;height:43px;border:1px solid #79512b;border-radius:10px;background:#160b06;color:#dfbd80;font-weight:1000}
+.panel{border:1px solid #76502b;border-radius:15px;background:linear-gradient(#2b170cF2,#0c0603FA);box-shadow:inset 0 0 22px #0008,0 7px 18px #0009}
+#setup{margin:auto 0;padding:22px 17px}#setup h1{text-align:center;margin:0;color:#efc66d;font-size:46px}#setup p{text-align:center;color:#a98c65;font:800 12px Arial}
+.count{display:flex;justify-content:center;gap:7px;flex-wrap:wrap}.count button{width:45px;height:45px;border:1px solid #79512b;border-radius:9px;background:#100805;color:#d5b67e;font-weight:1000}.count button.on{background:#70431d;color:#fff0bc;border-color:#d19a4d}
+.names{display:grid;gap:8px;max-width:450px;margin:17px auto}.names input{width:100%;padding:12px;border:1px solid #60401f;border-radius:9px;background:#090402;color:#f1d49b;font:800 15px Arial}
+.start{display:block;width:min(100%,450px);margin:auto;padding:15px;border:1px solid #ca9145;border-radius:11px;background:linear-gradient(#925b29,#3e1f0d);color:#ffedba;font-weight:1000}
+#game{display:none;flex:1;min-height:0}.toolbar{display:flex;gap:7px;margin:9px 0}.toolbar button{flex:1;min-height:40px;border:1px solid #674522;border-radius:9px;background:#130905;color:#cbaa75;font:900 10px Arial}
+.players{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;max-height:45dvh;overflow:auto}
+.player{padding:9px;border:1px solid #5b3b1e;border-radius:11px;background:linear-gradient(135deg,#27150b,#0b0503);transition:.25s}
+.player.dead{opacity:.43;filter:grayscale(.8)}.phead{display:flex;align-items:center;gap:8px}.avatar{--hp:1;position:relative;width:54px;height:54px;border-radius:50%;overflow:hidden;border:2px solid #a77739;background:radial-gradient(circle at 45% 28%,#765331 0 17%,#2b170c 44%,#080301 75%);box-shadow:inset 0 0 12px #000,0 2px 8px #000;transition:.35s}
+.avatar .head{position:absolute;left:17px;top:12px;width:20px;height:23px;border-radius:48% 48% 43% 43%;background:linear-gradient(100deg,#8f5d36,#d19a64 48%,#6d4026);box-shadow:inset -4px -2px 5px #3b1d10,0 2px 4px #000}
+.avatar .hair{position:absolute;left:14px;top:8px;width:27px;height:13px;border-radius:60% 60% 30% 30%;background:linear-gradient(#3b2416,#120a06);box-shadow:0 2px 3px #000}
+.avatar .body{position:absolute;left:8px;bottom:-10px;width:39px;height:31px;border-radius:48% 48% 12% 12%;background:linear-gradient(110deg,#6f522f,#1a2025 45%,#49351f);border-top:2px solid #a9854f;box-shadow:inset 0 4px 7px #0008}
+.avatar .eye{position:absolute;top:21px;width:3px;height:2px;border-radius:50%;background:#f4d18b;box-shadow:0 0 3px #ffd276;z-index:4}.avatar .e1{left:21px}.avatar .e2{left:31px}
+.avatar .scar{position:absolute;z-index:6;left:30px;top:17px;width:1px;height:14px;background:#7d1d14;transform:rotate(20deg);opacity:calc(1 - var(--hp))}
+.avatar:after{content:&quot;&quot;;position:absolute;inset:0;background:rgba(60,0,0,calc((1 - var(--hp)) * .52));box-shadow:inset 0 0 calc((1 - var(--hp))*25px) #000;pointer-events:none}
+.avatar.hurt .head{filter:saturate(.7)}.avatar.critical{border-color:#7b2921;animation:pulsehurt 1.15s infinite}.avatar.deadav{filter:grayscale(1) brightness(.38);border-color:#40352d}.avatar.deadav .head{transform:rotate(13deg) translateY(4px)}
+@keyframes pulsehurt{50%{box-shadow:inset 0 0 15px #000,0 0 12px #7d1711}}.pinfo{min-width:0;flex:1}.pname{font:1000 13px Arial;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.life{color:#efc66d;font:1000 25px Arial}.state{font:800 8px Arial;color:#967b59}
+.controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-top:8px}.controls button{min-height:38px;border-radius:8px;border:1px solid #684522;background:#120805;color:#d9ba81;font:1000 14px Arial}.controls .minus{border-color:#743a31;color:#e0a08b}.controls .plus{border-color:#6e6a31;color:#d9d98b}.controls .one{border-color:#a67534;background:#40230f;color:#f5d48c}
+.entry{margin-top:auto;padding-top:9px}.display{height:63px;display:flex;align-items:center;justify-content:center;color:#f1c96f;font:1000 43px Arial;letter-spacing:2px}.display small{font-size:12px;color:#8f7554;margin-right:8px}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:7px}.pad button{min-height:49px;border:1px solid #674522;border-radius:9px;background:linear-gradient(#28150b,#0e0704);color:#e2c48c;font:1000 20px Arial}.pad .clear{color:#dc9c88;border-color:#744034}.pad .back{color:#bfa171}
+#fx{position:absolute;z-index:80;left:50%;top:42%;transform:translate(-50%,-50%);opacity:0;pointer-events:none;font:1000 55px Georgia;color:#ffd47c;text-shadow:0 0 15px #c87828,0 5px 7px #000}.fx{animation:fx .7s ease-out}@keyframes fx{0%{opacity:0;transform:translate(-50%,-35%) scale(.6)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}100%{opacity:0;transform:translate(-50%,-75%) scale(.95)}}
+.overlay{position:absolute;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:22px;background:#040201ed}.overlay.on{display:flex}.dialog{width:min(100%,440px);padding:23px;text-align:center;border:1px solid #a97538;border-radius:16px;background:radial-gradient(circle at top,#472611,#100704 68%)}.dialog h2{margin:0;color:#efc66d;font-size:36px}.dialog p{font:800 12px Arial;color:#b99b70}.dialog button{width:100%;margin-top:8px;min-height:47px;border:1px solid #a97538;border-radius:9px;background:#48250e;color:#ffe6ad;font-weight:1000}
+@media(max-width:370px){.avatar{width:48px;height:48px}.life{font-size:22px}.pad button{min-height:44px}}
+&lt;/style&gt;&lt;/head&gt;
+&lt;body&gt;&lt;main id=&quot;app&quot;&gt;&lt;div class=&quot;shell&quot;&gt;
+&lt;div class=&quot;top&quot;&gt;&lt;button class=&quot;icon&quot; id=&quot;sound&quot;&gt;🔊&lt;/button&gt;&lt;div class=&quot;brand&quot;&gt;&lt;b&gt;30&lt;/b&gt;&lt;small&gt;TAVERN CLASH · DICE&lt;/small&gt;&lt;/div&gt;&lt;button class=&quot;icon&quot; id=&quot;lang&quot;&gt;CZ&lt;/button&gt;&lt;/div&gt;
+&lt;section id=&quot;setup&quot; class=&quot;panel&quot;&gt;&lt;h1&gt;30&lt;/h1&gt;&lt;p id=&quot;setupText&quot;&gt;Vyber počet hráčů a zadej jejich jména.&lt;/p&gt;&lt;div id=&quot;count&quot; class=&quot;count&quot;&gt;&lt;/div&gt;&lt;div id=&quot;savedPlayers30&quot; style=&quot;max-width:450px;margin:10px auto 8px;display:none&quot;&gt;
+      &lt;div style=&quot;font:900 10px Arial;color:#a98c65;margin-bottom:6px&quot;&gt;ULOŽENÍ HRÁČI&lt;/div&gt;
+      &lt;div id=&quot;savedPlayers30List&quot; style=&quot;display:flex;gap:6px;flex-wrap:wrap&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div id=&quot;names&quot; class=&quot;names&quot;&gt;&lt;/div&gt;&lt;button id=&quot;start&quot; class=&quot;start&quot;&gt;ZAČÍT HRU&lt;/button&gt;&lt;/section&gt;
+&lt;section id=&quot;game&quot;&gt;&lt;div class=&quot;toolbar&quot;&gt;&lt;button id=&quot;backToMain30&quot;&gt;← MENU&lt;/button&gt;&lt;button id=&quot;newGame&quot;&gt;NOVÁ HRA&lt;/button&gt;&lt;button id=&quot;endGame&quot;&gt;UKONČIT HRU&lt;/button&gt;&lt;/div&gt;&lt;div id=&quot;players&quot; class=&quot;players&quot;&gt;&lt;/div&gt;
+&lt;div class=&quot;entry&quot;&gt;&lt;div class=&quot;display panel&quot;&gt;&lt;small id=&quot;amountText&quot;&gt;HODNOTA&lt;/small&gt;&lt;span id=&quot;display&quot;&gt;0&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;pad&quot; id=&quot;pad&quot;&gt;
+&lt;button&gt;1&lt;/button&gt;&lt;button&gt;2&lt;/button&gt;&lt;button&gt;3&lt;/button&gt;&lt;button&gt;4&lt;/button&gt;&lt;button&gt;5&lt;/button&gt;&lt;button&gt;6&lt;/button&gt;&lt;button&gt;7&lt;/button&gt;&lt;button&gt;8&lt;/button&gt;&lt;button&gt;9&lt;/button&gt;&lt;button class=&quot;clear&quot;&gt;C&lt;/button&gt;&lt;button&gt;0&lt;/button&gt;&lt;button class=&quot;back&quot;&gt;⌫&lt;/button&gt;
+&lt;/div&gt;&lt;/div&gt;&lt;/section&gt;&lt;/div&gt;
+&lt;div id=&quot;fx&quot;&gt;&lt;/div&gt;
+&lt;div id=&quot;win&quot; class=&quot;overlay&quot;&gt;&lt;div class=&quot;dialog&quot;&gt;&lt;h2 id=&quot;winTitle&quot;&gt;VÍTĚZ!&lt;/h2&gt;&lt;p id=&quot;winner&quot;&gt;&lt;/p&gt;&lt;button id=&quot;rematch&quot;&gt;ODVETA&lt;/button&gt;&lt;button id=&quot;newPlayers&quot;&gt;NOVÍ HRÁČI&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div id=&quot;confirm&quot; class=&quot;overlay&quot;&gt;&lt;div class=&quot;dialog&quot;&gt;&lt;h2 id=&quot;confirmTitle&quot;&gt;Ukončit hru?&lt;/h2&gt;&lt;p id=&quot;confirmText&quot;&gt;Rozehraná hra bude zahozena.&lt;/p&gt;&lt;button id=&quot;cancel&quot;&gt;ZRUŠIT&lt;/button&gt;&lt;button id=&quot;yes&quot;&gt;UKONČIT&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/main&gt;
+&lt;script&gt;
+const $=s=&gt;document.querySelector(s),$$=s=&gt;document.querySelectorAll(s);
+const T={cs:{setup:&quot;Vyber počet hráčů a zadej jejich jména.&quot;,player:&quot;Hráč&quot;,start:&quot;ZAČÍT HRU&quot;,new:&quot;NOVÁ HRA&quot;,end:&quot;UKONČIT HRU&quot;,value:&quot;HODNOTA&quot;,life:&quot;životy&quot;,dead:&quot;VYŘAZEN&quot;,win:&quot;VÍTĚZ!&quot;,rematch:&quot;ODVETA&quot;,newp:&quot;NOVÍ HRÁČI&quot;,ct:&quot;Ukončit hru?&quot;,cx:&quot;Rozehraná hra bude zahozena.&quot;,cancel:&quot;ZRUŠIT&quot;},en:{setup:&quot;Choose the number of players and enter their names.&quot;,player:&quot;Player&quot;,start:&quot;START GAME&quot;,new:&quot;NEW GAME&quot;,end:&quot;END GAME&quot;,value:&quot;VALUE&quot;,life:&quot;lives&quot;,dead:&quot;ELIMINATED&quot;,win:&quot;WINNER!&quot;,rematch:&quot;REMATCH&quot;,newp:&quot;NEW PLAYERS&quot;,ct:&quot;End game?&quot;,cx:&quot;The current game will be discarded.&quot;,cancel:&quot;CANCEL&quot;}};
+let lang=&quot;cs&quot;,count=2,players=[],value=&quot;&quot;,sound=true,winSent30=false;
+function applyLang(){const t=T[lang];$(&quot;#lang&quot;).textContent=lang.toUpperCase();$(&quot;#setupText&quot;).textContent=t.setup;$(&quot;#start&quot;).textContent=t.start;$(&quot;#newGame&quot;).textContent=t.new;$(&quot;#endGame&quot;).textContent=t.end;$(&quot;#amountText&quot;).textContent=t.value;$(&quot;#winTitle&quot;).textContent=t.win;$(&quot;#rematch&quot;).textContent=t.rematch;$(&quot;#newPlayers&quot;).textContent=t.newp;$(&quot;#confirmTitle&quot;).textContent=t.ct;$(&quot;#confirmText&quot;).textContent=t.cx;$(&quot;#cancel&quot;).textContent=t.cancel;$(&quot;#yes&quot;).textContent=t.end;buildNames(true);render()}
+$(&quot;#lang&quot;).onclick=()=&gt;{lang=lang===&quot;cs&quot;?&quot;en&quot;:&quot;cs&quot;;applyLang()};
+function buildCount(){count=Math.max(2,count);$(&quot;#count&quot;).innerHTML=&quot;&quot;;for(let i=2;i&lt;=6;i++){let b=document.createElement(&quot;button&quot;);b.textContent=i;b.className=i===count?&quot;on&quot;:&quot;&quot;;b.onclick=()=&gt;{count=i;buildCount();buildNames(true)};$(&quot;#count&quot;).appendChild(b)}}
+function buildNames(keep){let old=keep?[...$$(&quot;#names input&quot;)].map(x=&gt;x.value):[];$(&quot;#names&quot;).innerHTML=&quot;&quot;;for(let i=0;i&lt;count;i++){let x=document.createElement(&quot;input&quot;);x.maxLength=18;x.value=old[i]||`${T[lang].player} ${i+1}`;$(&quot;#names&quot;).appendChild(x)}}
+function start(names=null){let n=names||[...$$(&quot;#names input&quot;)].map((x,i)=&gt;x.value.trim()||`${T[lang].player} ${i+1}`);players=n.map(name=&gt;({name,lives:30}));value=&quot;&quot;;winSent30=false;$(&quot;#setup&quot;).style.display=&quot;none&quot;;$(&quot;#game&quot;).style.display=&quot;flex&quot;;$(&quot;#game&quot;).style.flexDirection=&quot;column&quot;;sfx(392,.08);sfx(523,.12,.08);render()}
+$(&quot;#start&quot;).onclick=()=&gt;start();
+function avatarClass(l){return l&lt;=0?&quot;deadav&quot;:l&lt;=7?&quot;critical&quot;:l&lt;22?&quot;hurt&quot;:&quot;&quot;} function avatarHTML(l){let hp=Math.max(0,Math.min(1,l/30));return `&lt;div class=&quot;avatar ${avatarClass(l)}&quot; style=&quot;--hp:${hp}&quot;&gt;&lt;span class=&quot;body&quot;&gt;&lt;/span&gt;&lt;span class=&quot;head&quot;&gt;&lt;/span&gt;&lt;span class=&quot;hair&quot;&gt;&lt;/span&gt;&lt;span class=&quot;eye e1&quot;&gt;&lt;/span&gt;&lt;span class=&quot;eye e2&quot;&gt;&lt;/span&gt;&lt;span class=&quot;scar&quot;&gt;&lt;/span&gt;&lt;/div&gt;`}
+function state(l){return l&lt;=0?T[lang].dead:(l+&quot; &quot;+T[lang].life)}
+function render(){if(!players.length)return;$(&quot;#players&quot;).innerHTML=players.map((p,i)=&gt;`&lt;div class=&quot;player ${p.lives&lt;=0?&quot;dead&quot;:&quot;&quot;}&quot;&gt;&lt;div class=&quot;phead&quot;&gt;${avatarHTML(p.lives)}&lt;div class=&quot;pinfo&quot;&gt;&lt;div class=&quot;pname&quot;&gt;${esc(p.name)}&lt;/div&gt;&lt;div class=&quot;state&quot;&gt;${state(p.lives)}&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;life&quot;&gt;${p.lives}&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;controls&quot;&gt;&lt;button class=&quot;minus&quot; data-i=&quot;${i}&quot; data-op=&quot;-&quot;&gt;−&lt;/button&gt;&lt;button class=&quot;one&quot; data-i=&quot;${i}&quot; data-one=&quot;1&quot;&gt;+1&lt;/button&gt;&lt;button class=&quot;plus&quot; data-i=&quot;${i}&quot; data-op=&quot;+&quot;&gt;+&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;`).join(&quot;&quot;);$$(&quot;[data-op]&quot;).forEach(b=&gt;b.onclick=()=&gt;change(+b.dataset.i,b.dataset.op));$$(&quot;[data-one]&quot;).forEach(b=&gt;b.onclick=()=&gt;addOne(+b.dataset.i));$(&quot;#display&quot;).textContent=value||&quot;0&quot;}
+function esc(s){return s.replace(/[&amp;&lt;&gt;&quot;&#x27;]/g,m=&gt;({&quot;&amp;&quot;:&quot;&amp;amp;&quot;,&quot;&lt;&quot;:&quot;&amp;lt;&quot;,&quot;&gt;&quot;:&quot;&amp;gt;&quot;,&#x27;&quot;&#x27;:&quot;&amp;quot;&quot;,&quot;&#x27;&quot;:&quot;&amp;#39;&quot;}[m]))}
+$(&quot;#pad&quot;).onclick=e=&gt;{let b=e.target.closest(&quot;button&quot;);if(!b)return;if(b.classList.contains(&quot;clear&quot;))value=&quot;&quot;;else if(b.classList.contains(&quot;back&quot;))value=value.slice(0,-1);else if(value.length&lt;3)value+=(b.textContent);render()}
+function change(i,op){if(players[i].lives&lt;=0)return;let n=Number(value||0);if(!n)return;let before=players[i].lives;players[i].lives=op===&quot;+&quot;?players[i].lives+n:Math.max(0,players[i].lives-n);flash((op===&quot;+&quot;?&quot;+&quot;:&quot;−&quot;)+n);if(op===&quot;+&quot;)healSound();else if(before&gt;0&amp;&amp;players[i].lives===0)deathSound();else hitSound(n);value=&quot;&quot;;render();checkWin()}
+function addOne(i){if(players[i].lives&lt;=0)return;players[i].lives++;flash(&quot;+1&quot;);healSound();render();checkWin()}
+function checkWin(){let alive=players.filter(p=&gt;p.lives&gt;0);if(players.length&gt;1&amp;&amp;alive.length===1){if(!winSent30){winSent30=true;try{parent.postMessage({type:&quot;tc30-win&quot;,player:alive[0].name},&quot;*&quot;)}catch(e){}}setTimeout(()=&gt;{$(&quot;#winner&quot;).textContent=alive[0].name+&quot; · &quot;+alive[0].lives+&quot; ♥&quot;;$(&quot;#win&quot;).classList.add(&quot;on&quot;);winSound()},450)}}
+function flash(x){let f=$(&quot;#fx&quot;);f.textContent=x;f.className=&quot;&quot;;void f.offsetWidth;f.className=&quot;fx&quot;}
+let ac;
+function audio(){try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();if(ac.state===&quot;suspended&quot;)ac.resume();return ac}catch(e){return null}}
+function sfx(f,d=.11,delay=0,type=&quot;triangle&quot;,vol=.13){if(!sound)return;let a=audio();if(!a)return;let o=a.createOscillator(),g=a.createGain(),t=a.currentTime+delay;o.type=type;o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(Math.max(45,f*.72),t+d);g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+d)}
+function hitSound(n){sfx(n&gt;=10?105:145,.22,0,&quot;sawtooth&quot;,.16);sfx(n&gt;=10?70:95,.28,.025,&quot;triangle&quot;,.11)}
+function healSound(){sfx(430,.12,0,&quot;sine&quot;,.11);sfx(650,.18,.07,&quot;sine&quot;,.09)}
+function deathSound(){sfx(120,.38,0,&quot;sawtooth&quot;,.18);sfx(74,.55,.10,&quot;triangle&quot;,.16);sfx(48,.7,.22,&quot;sine&quot;,.12)}
+function winSound(){[392,494,587,784].forEach((f,i)=&gt;sfx(f,.32,i*.11,&quot;triangle&quot;,.12))}
+document.addEventListener(&quot;pointerdown&quot;,()=&gt;audio(),{once:true});
+$(&quot;#sound&quot;).onclick=()=&gt;{sound=!sound;$(&quot;#sound&quot;).textContent=sound?&quot;🔊&quot;:&quot;🔇&quot;};
+$(&quot;#newGame&quot;).onclick=()=&gt;$(&quot;#confirm&quot;).classList.add(&quot;on&quot;);$(&quot;#endGame&quot;).onclick=()=&gt;$(&quot;#confirm&quot;).classList.add(&quot;on&quot;);$(&quot;#cancel&quot;).onclick=()=&gt;$(&quot;#confirm&quot;).classList.remove(&quot;on&quot;);$(&quot;#yes&quot;).onclick=()=&gt;{$(&quot;#confirm&quot;).classList.remove(&quot;on&quot;);$(&quot;#game&quot;).style.display=&quot;none&quot;;$(&quot;#setup&quot;).style.display=&quot;block&quot;;players=[];buildCount();buildNames(false)};
+$(&quot;#rematch&quot;).onclick=()=&gt;{let n=players.map(p=&gt;p.name);$(&quot;#win&quot;).classList.remove(&quot;on&quot;);start(n)};$(&quot;#newPlayers&quot;).onclick=()=&gt;{$(&quot;#win&quot;).classList.remove(&quot;on&quot;);$(&quot;#game&quot;).style.display=&quot;none&quot;;$(&quot;#setup&quot;).style.display=&quot;block&quot;;players=[];buildCount();buildNames(false)};
+buildCount();buildNames(false);applyLang();
+
+$(&quot;#backToMain30&quot;).onclick=()=&gt;{try{parent.postMessage({type:&quot;tc30-close&quot;},&quot;*&quot;)}catch(e){}};
+function showSavedPlayers30(list){
+ const box=$(&quot;#savedPlayers30&quot;), dst=$(&quot;#savedPlayers30List&quot;);
+ dst.innerHTML=&quot;&quot;;
+ (list||[]).forEach(name=&gt;{
+   const b=document.createElement(&quot;button&quot;);
+   b.type=&quot;button&quot;; b.textContent=name;
+   b.style.cssText=&quot;min-height:36px;padding:0 10px;border:1px solid #79512b;border-radius:8px;background:#120805;color:#d9ba81;font:900 11px Arial&quot;;
+   b.onclick=()=&gt;{
+     const inputs=[...$$(&quot;#names input&quot;)];
+     const target=inputs.find(x=&gt;!x.value.trim()||/^Hráč \d+$|^Player \d+$/.test(x.value.trim()));
+     if(target)target.value=name;
+   };
+   dst.appendChild(b);
+ });
+ box.style.display=(list&amp;&amp;list.length)?&quot;block&quot;:&quot;none&quot;;
+}
+window.addEventListener(&quot;message&quot;,e=&gt;{
+ const d=e.data||{};
+ if(d.type===&quot;tc30-players&quot;)showSavedPlayers30(d.players||[]);
+});
+try{parent.postMessage({type:&quot;tc30-ready&quot;},&quot;*&quot;)}catch(e){}
+
+&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;"></iframe>
+</section>
+
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(() => {});
+  });
+}
+</script>
+
+</body></html>
