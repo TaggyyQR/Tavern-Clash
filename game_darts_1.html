@@ -259,7 +259,7 @@ html,body{overflow:hidden}
 
 <script>
 const $=s=>document.querySelector(s);
-let playerCount=2,startScore=501,players=[],active=0,darts=[],mult=1,history=[],roundStart=0,gameOver=false;
+let playerCount=2,startScore=501,players=[],active=0,darts=[],mult=1,history=[],roundStart=0,gameOver=false,roundNo=1;
 let commentatorOn=localStorage.getItem("tc_darts_commentator_v1")!=="0";
 let audioQueue=[],audioPlaying=false,currentVoice=null;
 let audioUnlocked=false;
@@ -274,6 +274,7 @@ let lastScore26Variant=-1;
 function score26File(){let i=Math.floor(Math.random()*6);if(i===lastScore26Variant)i=(i+1+Math.floor(Math.random()*5))%6;lastScore26Variant=i;return "assets/audio/darts/score26/SCORE_026_"+String(i+1).padStart(2,"0")+".mp3"}
 function scoreFile(n){n=Math.max(0,Math.min(180,Math.round(n)));if(n===26)return score26File();return "assets/audio/darts/score/SCORE_"+String(n).padStart(3,"0")+".mp3"}
 function easterFile(n){return "assets/audio/darts/easter/EASTER_"+String(n).padStart(3,"0")+".mp3"}
+function bustFile(){return "assets/audio/darts/BUST.mp3"}
 function queueVoice(src){if(!commentatorOn)return;audioQueue.push(src);playQueue()}
 function playQueue(){
  if(audioPlaying||!commentatorOn||!audioQueue.length)return;
@@ -302,7 +303,7 @@ $("#startBtn").addEventListener("click", function(){
  var ins=Array.from(document.querySelectorAll("#names input"));
  players=ins.map(function(x,i){return {name:(x.value||"").trim()||("Hráč "+(i+1)),score:startScore};});
  if(!players.length){ players=[{name:"Hráč 1",score:startScore}]; }
- active=0; history=[]; gameOver=false;
+ active=0; history=[]; gameOver=false; roundNo=1;
  $("#setup").classList.add("hidden");
  $("#win").classList.add("hidden");
  $("#game").classList.remove("hidden");
@@ -320,19 +321,19 @@ function addDart(v,m=mult){
  // bust if below zero, or leaves 1 (cannot master-out), or hits zero without D/T
  if(after<0 || after===1 || (after===0 && !(m===2||m===3))){
    $("#status").textContent="BUST — skóre se vrací.";
-   players[active].score=roundStart; render(); announceScore(0); setTimeout(nextPlayer,450); return;
+   players[active].score=roundStart; render(); queueVoice(bustFile()); setTimeout(nextPlayer,450); return;
  }
  players[active].score=after;
  if(after===0){announceScore(darts.reduce((a,x)=>a+x.pts,0));finishWinner();return}
  if(darts.length===3){announceScore(darts.reduce((a,x)=>a+x.pts,0));setTimeout(nextPlayer,180);}
  render();
 }
-function nextPlayer(){if(gameOver)return; active=(active+1)%players.length;beginTurn();render()}
+function nextPlayer(){if(gameOver)return; active=(active+1)%players.length;if(active===0)roundNo++;beginTurn();render()}
 function finishWinner(){gameOver=true;render();setTimeout(()=>{$("#game").classList.add("hidden");$("#win").classList.remove("hidden");$("#winnerText").innerHTML="🏆 "+esc(players[active].name)+"<br><small>MASTER OUT</small>";},250)}
 function esc(s){return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
 function render(){
  $("#scoreboard").innerHTML=players.map((p,i)=>`<div class="player ${i===active?"active":""}"><div class="pname">${esc(p.name)}</div><div class="pscore">${p.score}</div></div>`).join("");
- $("#turnName").textContent=players[active]?.name||"";
+ $("#turnName").textContent=(players[active]?.name||"")+"  ·  KOLO "+roundNo;
  $("#darts").textContent=darts.length?darts.map(x=>x.label).join("  |  "):"—";
  $("#sum").textContent="Kolo: "+darts.reduce((a,x)=>a+x.pts,0)+" · zbývá "+(players[active]?.score??"");
 }
@@ -374,7 +375,7 @@ $("#classicBtn").addEventListener("click",function(){
    $("#status").textContent="KLASIKA: 1 | 5 | 20 = 26 · BUST";
    p.score=roundStart;
    render();
-   announceScore(0);
+   queueVoice(bustFile());
    setTimeout(nextPlayer,700);
    return;
  }
@@ -385,16 +386,16 @@ $("#classicBtn").addEventListener("click",function(){
  announceScore(26);
  setTimeout(nextPlayer,700);
 });
-function snapshot(){return {scores:players.map(function(p){return p.score}),active:active,roundStart:roundStart}}
+function snapshot(){return {scores:players.map(function(p){return p.score}),active:active,roundStart:roundStart,roundNo:roundNo}}
 $("#undoTurnBtn").addEventListener("click",function(){
  var h=history.pop();
  if(!h){$("#status").textContent="Není co vrátit.";return}
  h.scores.forEach(function(v,i){players[i].score=v});
- active=h.active; beginTurn(); render(); $("#status").textContent="Kolo vráceno.";
+ active=h.active; roundNo=h.roundNo||1; beginTurn(); render(); $("#status").textContent="Kolo vráceno.";
 });
 $("#newBtn").onclick=()=>{$("#game").classList.add("hidden");$("#setup").classList.remove("hidden")}
 $("#newSetupBtn").onclick=()=>{$("#win").classList.add("hidden");$("#setup").classList.remove("hidden")}
-$("#rematchBtn").onclick=()=>{players.forEach(p=>p.score=startScore);active=0;history=[];gameOver=false;$("#win").classList.add("hidden");$("#game").classList.remove("hidden");beginTurn();render()}
+$("#rematchBtn").onclick=()=>{players.forEach(p=>p.score=startScore);active=0;history=[];gameOver=false;roundNo=1;$("#win").classList.add("hidden");$("#game").classList.remove("hidden");beginTurn();render()}
 $("#commentatorBtn").addEventListener("click",function(){
  commentatorOn=!commentatorOn;localStorage.setItem("tc_darts_commentator_v1",commentatorOn?"1":"0");
  if(!commentatorOn){audioQueue=[];if(currentVoice){currentVoice.pause();currentVoice.currentTime=0}currentVoice=null;audioPlaying=false}

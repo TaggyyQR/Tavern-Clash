@@ -1,5 +1,5 @@
-const CACHE="tavern-clash-v0.8-darts-deploy-fix";
-const CORE=["./","./index.html","./game30.html","./game_darts_1.html","./manifest.webmanifest","./icons/icon-192.png","./icons/icon-512.png","./assets/asset-1-c7aa3583019c.png","./assets/asset-2-ff5aedfab131.png","./assets/asset-3-534a26b685a6.mp3"];
+const CACHE="tavern-clash-v0.9-bust-round";
+const CORE=["./","./index.html","./game30.html","./game_darts_1.html","./assets/audio/darts/BUST.mp3","./manifest.webmanifest","./icons/icon-192.png","./icons/icon-512.png","./assets/asset-1-c7aa3583019c.png","./assets/asset-2-ff5aedfab131.png","./assets/asset-3-534a26b685a6.mp3"];
 self.addEventListener("install",e=>{
  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()));
 });
