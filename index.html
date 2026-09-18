@@ -2,6 +2,7 @@
 
 <html lang="cs">
 <head>
+<meta name="tc-build" content="0.6.1-darts-visible">
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="#080402" name="theme-color"/>
@@ -1442,12 +1443,7 @@ $("#fsArtHit").onclick=async()=>{
  }catch(e){}
 };
 
-function openDarts1(){
- const ov=$("#darts1Overlay");
- if(!ov)return;
- try{$("#music").pause()}catch(e){}
- ov.style.display="block";
-}
+
 function openExactCategory(cat){
  const x=EXACT_MENU_TXT[lang];
  $("#menu").classList.remove("active");
@@ -1459,10 +1455,11 @@ function openExactCategory(cat){
    <button id="go30Exact" class="catGameExact"><strong>30</strong><span>${lang==="cs"?"Souboj o poslední život":"Last life standing"}</span></button>`;
   $("#go10kExact").onclick=()=>openLocked10K();
   $("#go30Exact").onclick=()=>openGame30();
+ 
  }else if(cat==="darts"){
   $("#catGamesExact").innerHTML=`
-   <button id="goDarts1Exact" class="catGameExact"><strong>1</strong><span>Master Out</span></button>`;
-  $("#goDarts1Exact").onclick=()=>openDarts1();
+   <button id="goDarts1Exact" class="catGameExact"><strong>1</strong><span>${lang==="cs"?"Master Out – šipky":"Master Out – darts"}</span></button>`;
+  $("#goDarts1Exact").onclick=()=>openGameDarts1();
  }else{
   $("#catGamesExact").innerHTML=`<div class="catEmptyExact">${x.empty}</div>`;
  }
@@ -1602,6 +1599,31 @@ window.addEventListener("message",e=>{
 });
 
 
+function openGameDarts1(){
+ const host=document.getElementById("gameDarts1Host");
+ const frame=document.getElementById("gameDarts1Frame");
+ pauseMenuMusic();
+ host.style.display="block";
+ let list=[];
+ try{
+   const raw=JSON.parse(localStorage.getItem("tavern_clash_players_v1")||"[]");
+   list=raw.map(x=>typeof x==="string"?x:x&&x.name).filter(Boolean);
+ }catch(e){}
+ setTimeout(()=>{try{frame.contentWindow.postMessage({type:"tc-darts-players",players:list},"*")}catch(e){}},80);
+}
+window.addEventListener("message",e=>{
+ const d=e.data||{};
+ if(d.type==="tc-darts-close"){
+   document.getElementById("gameDarts1Host").style.display="none";
+   if(musicWanted)playMusic();
+   if(typeof renderStats==="function")renderStats();
+ }
+ if(d.type==="tc-darts-win"&&d.player&&typeof recordWin==="function"){
+   recordWin(d.player,"darts1");
+   if(typeof renderStats==="function")renderStats();
+ }
+});
+
 function openGame30(){
  const host=document.getElementById("game30Host");
  const frame=document.getElementById("game30Frame");
@@ -1645,6 +1667,9 @@ window.addEventListener("message",e=>{
 });
 
 </script>
+<section id="gameDarts1Host" style="position:fixed;inset:0;z-index:100001;background:#050201;display:none">
+<iframe id="gameDarts1Frame" src="game_darts_1.html?v=061" style="display:block;width:100%;height:100%;border:0;background:#050201" title="Šipky 1"></iframe>
+</section>
 <section id="game30Host" style="position:fixed;inset:0;z-index:100000;background:#050201;display:none">
 <iframe id="game30Frame" src="game30.html" style="display:block;width:100%;height:100%;border:0;background:#050201" title="30"></iframe>
 </section>
@@ -1655,8 +1680,4 @@ if ("serviceWorker" in navigator) {
   });
 }
 </script>
-<div id="darts1Overlay" style="display:none;position:fixed;inset:0;z-index:99999;background:#090705"><iframe id="darts1Frame" src="game_darts_1.html" style="width:100%;height:100%;border:0"></iframe></div><script id="darts1-integration">
-(function(){const b=document.getElementById("openDarts1"),o=document.getElementById("darts1Overlay");
-if(b)b.addEventListener("click",()=>{document.querySelectorAll("audio").forEach(a=>a.pause());o.style.display="block"});
-window.addEventListener("message",e=>{if((e.data||{}).type==="tc-darts-close")o.style.display="none"});
-})();</script></body></html>
+</body></html>
