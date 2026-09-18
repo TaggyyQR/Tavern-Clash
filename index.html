@@ -1170,6 +1170,9 @@ const COMMENTARY={
  1000:[&quot;10k_1000_01.mp3&quot;,&quot;10k_1000_02.mp3&quot;,&quot;10k_1000_03.mp3&quot;],
  2000:[&quot;10k_2000_01.mp3&quot;,&quot;10k_2000_02.mp3&quot;,&quot;10k_2000_03.mp3&quot;],
  3000:[&quot;10k_3000_01.mp3&quot;,&quot;10k_3000_02.mp3&quot;,&quot;10k_3000_03.mp3&quot;],
+ 4000:[&quot;10k_4000_01.mp3&quot;,&quot;10k_4000_02.mp3&quot;,&quot;10k_4000_03.mp3&quot;],
+ 5000:[&quot;10k_5000_01.mp3&quot;,&quot;10k_5000_02.mp3&quot;,&quot;10k_5000_03.mp3&quot;],
+ 7000:[&quot;10k_7000_01.mp3&quot;,&quot;10k_7000_02.mp3&quot;,&quot;10k_7000_03.mp3&quot;],
  nic:[&quot;10k_nic_01.mp3&quot;,&quot;10k_nic_02.mp3&quot;,&quot;10k_nic_03.mp3&quot;],
  nic2:[&quot;10k_nic2_01.mp3&quot;,&quot;10k_nic2_02.mp3&quot;,&quot;10k_nic2_03.mp3&quot;],
  curse:[&quot;10k_curse_01.mp3&quot;,&quot;10k_curse_02.mp3&quot;,&quot;10k_curse_03.mp3&quot;],
@@ -1182,7 +1185,7 @@ function playComment(kind){
  if(arr.length&gt;1&amp;&amp;i===lastComment[kind])i=(i+1)%arr.length;lastComment[kind]=i;
  try{if(commentatorAudio){commentatorAudio.pause();commentatorAudio.currentTime=0}commentatorAudio=new Audio(&quot;assets/audio/10k/&quot;+arr[i]);commentatorAudio.volume=.95;commentatorAudio.play().catch(()=&gt;{})}catch(e){}
 }
-function commentForScore(v){if(v&gt;=3000)return &quot;3000&quot;;if(v&gt;=2000)return &quot;2000&quot;;if(v&gt;=1000)return &quot;1000&quot;;return &quot;good&quot;}
+function commentForScore(v){if(v&gt;=7000)return &quot;7000&quot;;if(v&gt;=5000)return &quot;5000&quot;;if(v&gt;=4000)return &quot;4000&quot;;if(v&gt;=3000)return &quot;3000&quot;;if(v&gt;=2000)return &quot;2000&quot;;if(v&gt;=1000)return &quot;1000&quot;;return &quot;good&quot;}
 function syncCommentatorButton(){$(&quot;#commentator&quot;).textContent=commentatorOn?&quot;K&quot;:&quot;K×&quot;;$(&quot;#commentator&quot;).style.opacity=commentatorOn?&quot;1&quot;:&quot;.5&quot;}
 $(&quot;#sound&quot;).addEventListener(&quot;click&quot;,()=&gt;{
  soundOn=!soundOn;$(&quot;#sound&quot;).textContent=soundOn?&quot;🔊&quot;:&quot;🔇&quot;;
