@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TAVERN CLASH — 30</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#050201;color:#efd39a;font-family:Georgia,serif}
+button,input{font:inherit}button{cursor:pointer}
+#app{min-height:100dvh;max-width:768px;margin:auto;position:relative;overflow:hidden;background:linear-gradient(#080402d9,#020101f5),url("assets/asset-1-c7aa3583019c.png") center/cover}
+.shell{min-height:100dvh;padding:max(14px,env(safe-area-inset-top)) 13px max(14px,env(safe-area-inset-bottom));display:flex;flex-direction:column}
+.top{display:flex;align-items:center;gap:8px}.brand{flex:1;text-align:center}.brand b{display:block;color:#efc66d;font-size:34px;text-shadow:0 4px 5px #000}.brand small{font:900 9px Arial;color:#9f825d;letter-spacing:1.4px}
+.icon{width:43px;height:43px;border:1px solid #79512b;border-radius:10px;background:#160b06;color:#dfbd80;font-weight:1000}
+.panel{border:1px solid #76502b;border-radius:15px;background:linear-gradient(#2b170cF2,#0c0603FA);box-shadow:inset 0 0 22px #0008,0 7px 18px #0009}
+#setup{margin:auto 0;padding:22px 17px}#setup h1{text-align:center;margin:0;color:#efc66d;font-size:46px}#setup p{text-align:center;color:#a98c65;font:800 12px Arial}
+.count{display:flex;justify-content:center;gap:7px;flex-wrap:wrap}.count button{width:45px;height:45px;border:1px solid #79512b;border-radius:9px;background:#100805;color:#d5b67e;font-weight:1000}.count button.on{background:#70431d;color:#fff0bc;border-color:#d19a4d}
+.names{display:grid;gap:8px;max-width:450px;margin:17px auto}.names input{width:100%;padding:12px;border:1px solid #60401f;border-radius:9px;background:#090402;color:#f1d49b;font:800 15px Arial}
+.start{display:block;width:min(100%,450px);margin:auto;padding:15px;border:1px solid #ca9145;border-radius:11px;background:linear-gradient(#925b29,#3e1f0d);color:#ffedba;font-weight:1000}
+#game{display:none;flex:1;min-height:0}.toolbar{display:flex;gap:7px;margin:9px 0}.toolbar button{flex:1;min-height:40px;border:1px solid #674522;border-radius:9px;background:#130905;color:#cbaa75;font:900 10px Arial}
+.players{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;max-height:45dvh;overflow:auto}
+.player{padding:9px;border:1px solid #5b3b1e;border-radius:11px;background:linear-gradient(135deg,#27150b,#0b0503);transition:.25s}
+.player.dead{opacity:.43;filter:grayscale(.8)}.phead{display:flex;align-items:center;gap:8px}.avatar{--hp:1;position:relative;width:54px;height:54px;border-radius:50%;overflow:hidden;border:2px solid #a77739;background:radial-gradient(circle at 45% 28%,#765331 0 17%,#2b170c 44%,#080301 75%);box-shadow:inset 0 0 12px #000,0 2px 8px #000;transition:.35s}
+.avatar .head{position:absolute;left:17px;top:12px;width:20px;height:23px;border-radius:48% 48% 43% 43%;background:linear-gradient(100deg,#8f5d36,#d19a64 48%,#6d4026);box-shadow:inset -4px -2px 5px #3b1d10,0 2px 4px #000}
+.avatar .hair{position:absolute;left:14px;top:8px;width:27px;height:13px;border-radius:60% 60% 30% 30%;background:linear-gradient(#3b2416,#120a06);box-shadow:0 2px 3px #000}
+.avatar .body{position:absolute;left:8px;bottom:-10px;width:39px;height:31px;border-radius:48% 48% 12% 12%;background:linear-gradient(110deg,#6f522f,#1a2025 45%,#49351f);border-top:2px solid #a9854f;box-shadow:inset 0 4px 7px #0008}
+.avatar .eye{position:absolute;top:21px;width:3px;height:2px;border-radius:50%;background:#f4d18b;box-shadow:0 0 3px #ffd276;z-index:4}.avatar .e1{left:21px}.avatar .e2{left:31px}
+.avatar .scar{position:absolute;z-index:6;left:30px;top:17px;width:1px;height:14px;background:#7d1d14;transform:rotate(20deg);opacity:calc(1 - var(--hp))}
+.avatar:after{content:"";position:absolute;inset:0;background:rgba(60,0,0,calc((1 - var(--hp)) * .52));box-shadow:inset 0 0 calc((1 - var(--hp))*25px) #000;pointer-events:none}
+.avatar.hurt .head{filter:saturate(.7)}.avatar.critical{border-color:#7b2921;animation:pulsehurt 1.15s infinite}.avatar.deadav{filter:grayscale(1) brightness(.38);border-color:#40352d}.avatar.deadav .head{transform:rotate(13deg) translateY(4px)}
+@keyframes pulsehurt{50%{box-shadow:inset 0 0 15px #000,0 0 12px #7d1711}}.pinfo{min-width:0;flex:1}.pname{font:1000 13px Arial;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.life{color:#efc66d;font:1000 25px Arial}.state{font:800 8px Arial;color:#967b59}
+.controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-top:8px}.controls button{min-height:38px;border-radius:8px;border:1px solid #684522;background:#120805;color:#d9ba81;font:1000 14px Arial}.controls .minus{border-color:#743a31;color:#e0a08b}.controls .plus{border-color:#6e6a31;color:#d9d98b}.controls .one{border-color:#a67534;background:#40230f;color:#f5d48c}
+.entry{margin-top:auto;padding-top:9px}.display{height:63px;display:flex;align-items:center;justify-content:center;color:#f1c96f;font:1000 43px Arial;letter-spacing:2px}.display small{font-size:12px;color:#8f7554;margin-right:8px}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:7px}.pad button{min-height:49px;border:1px solid #674522;border-radius:9px;background:linear-gradient(#28150b,#0e0704);color:#e2c48c;font:1000 20px Arial}.pad .clear{color:#dc9c88;border-color:#744034}.pad .back{color:#bfa171}
+#fx{position:absolute;z-index:80;left:50%;top:42%;transform:translate(-50%,-50%);opacity:0;pointer-events:none;font:1000 55px Georgia;color:#ffd47c;text-shadow:0 0 15px #c87828,0 5px 7px #000}.fx{animation:fx .7s ease-out}@keyframes fx{0%{opacity:0;transform:translate(-50%,-35%) scale(.6)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}100%{opacity:0;transform:translate(-50%,-75%) scale(.95)}}
+.overlay{position:absolute;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:22px;background:#040201ed}.overlay.on{display:flex}.dialog{width:min(100%,440px);padding:23px;text-align:center;border:1px solid #a97538;border-radius:16px;background:radial-gradient(circle at top,#472611,#100704 68%)}.dialog h2{margin:0;color:#efc66d;font-size:36px}.dialog p{font:800 12px Arial;color:#b99b70}.dialog button{width:100%;margin-top:8px;min-height:47px;border:1px solid #a97538;border-radius:9px;background:#48250e;color:#ffe6ad;font-weight:1000}
+@media(max-width:370px){.avatar{width:48px;height:48px}.life{font-size:22px}.pad button{min-height:44px}}
+</style></head>
+<body><main id="app"><div class="shell">
+<div class="top"><button class="icon" id="sound" title="Efekty">🔊</button><button class="icon" id="commentator30" title="Komentátor">K</button><button class="icon" id="gameMusic" title="Hudba">🎵</button><div class="brand"><b>30</b><small>TAVERN CLASH · DICE</small></div><button class="icon" id="lang">CZ</button></div>
+<section id="setup" class="panel"><h1>30</h1><p id="setupText">Vyber počet hráčů a zadej jejich jména.</p><div id="count" class="count"></div><div id="savedPlayers30" style="max-width:450px;margin:10px auto 8px;display:none">
+      <div style="font:900 10px Arial;color:#a98c65;margin-bottom:6px">ULOŽENÍ HRÁČI</div>
+      <div id="savedPlayers30List" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+    </div>
+    <div id="names" class="names"></div><button id="start" class="start">ZAČÍT HRU</button></section>
+<section id="game"><div class="toolbar"><button id="backToMain30">← MENU</button><button id="newGame">NOVÁ HRA</button><button id="endGame">UKONČIT HRU</button></div><div id="players" class="players"></div>
+<div class="entry"><div class="display panel"><small id="amountText">HODNOTA</small><span id="display">0</span></div><div class="pad" id="pad">
+<button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button><button>7</button><button>8</button><button>9</button><button class="clear">C</button><button>0</button><button class="back">⌫</button>
+</div></div></section></div>
+<div id="fx"></div>
+<div id="win" class="overlay"><div class="dialog"><h2 id="winTitle">VÍTĚZ!</h2><p id="winner"></p><button id="rematch">ODVETA</button><button id="newPlayers">NOVÍ HRÁČI</button></div></div>
+<div id="confirm" class="overlay"><div class="dialog"><h2 id="confirmTitle">Ukončit hru?</h2><p id="confirmText">Rozehraná hra bude zahozena.</p><button id="cancel">ZRUŠIT</button><button id="yes">UKONČIT</button></div></div>
+</main>
+<script>
+const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
+const T={cs:{setup:"Vyber počet hráčů a zadej jejich jména.",player:"Hráč",start:"ZAČÍT HRU",new:"NOVÁ HRA",end:"UKONČIT HRU",value:"HODNOTA",life:"životy",dead:"VYŘAZEN",win:"VÍTĚZ!",rematch:"ODVETA",newp:"NOVÍ HRÁČI",ct:"Ukončit hru?",cx:"Rozehraná hra bude zahozena.",cancel:"ZRUŠIT"},en:{setup:"Choose the number of players and enter their names.",player:"Player",start:"START GAME",new:"NEW GAME",end:"END GAME",value:"VALUE",life:"lives",dead:"ELIMINATED",win:"WINNER!",rematch:"REMATCH",newp:"NEW PLAYERS",ct:"End game?",cx:"The current game will be discarded.",cancel:"CANCEL"}};
+let lang="cs",count=2,players=[],value="",sound=true,winSent30=false,commentator30=localStorage.getItem("tc_commentator_30_v1")!=="0";
+function applyLang(){const t=T[lang];$("#lang").textContent=lang.toUpperCase();$("#setupText").textContent=t.setup;$("#start").textContent=t.start;$("#newGame").textContent=t.new;$("#endGame").textContent=t.end;$("#amountText").textContent=t.value;$("#winTitle").textContent=t.win;$("#rematch").textContent=t.rematch;$("#newPlayers").textContent=t.newp;$("#confirmTitle").textContent=t.ct;$("#confirmText").textContent=t.cx;$("#cancel").textContent=t.cancel;$("#yes").textContent=t.end;buildNames(true);render()}
+$("#lang").onclick=()=>{lang=lang==="cs"?"en":"cs";applyLang()};
+function buildCount(){count=Math.max(2,count);$("#count").innerHTML="";for(let i=2;i<=6;i++){let b=document.createElement("button");b.textContent=i;b.className=i===count?"on":"";b.onclick=()=>{count=i;buildCount();buildNames(true)};$("#count").appendChild(b)}}
+function buildNames(keep){let old=keep?[...$$("#names input")].map(x=>x.value):[];$("#names").innerHTML="";for(let i=0;i<count;i++){let x=document.createElement("input");x.maxLength=18;x.value=old[i]||`${T[lang].player} ${i+1}`;$("#names").appendChild(x)}}
+function start(names=null){let n=names||[...$$("#names input")].map((x,i)=>x.value.trim()||`${T[lang].player} ${i+1}`);players=n.map(name=>({name,lives:30}));value="";winSent30=false;$("#setup").style.display="none";$("#game").style.display="flex";$("#game").style.flexDirection="column";sfx(392,.08);sfx(523,.12,.08);render()}
+$("#start").onclick=()=>start();
+function avatarClass(l){return l<=0?"deadav":l<=7?"critical":l<22?"hurt":""} function avatarHTML(l){let hp=Math.max(0,Math.min(1,l/30));return `<div class="avatar ${avatarClass(l)}" style="--hp:${hp}"><span class="body"></span><span class="head"></span><span class="hair"></span><span class="eye e1"></span><span class="eye e2"></span><span class="scar"></span></div>`}
+function state(l){return l<=0?T[lang].dead:(l+" "+T[lang].life)}
+function render(){if(!players.length)return;$("#players").innerHTML=players.map((p,i)=>`<div class="player ${p.lives<=0?"dead":""}"><div class="phead">${avatarHTML(p.lives)}<div class="pinfo"><div class="pname">${esc(p.name)}</div><div class="state">${state(p.lives)}</div></div><div class="life">${p.lives}</div></div><div class="controls"><button class="minus" data-i="${i}" data-op="-">−</button><button class="one" data-i="${i}" data-one="1">+1</button><button class="plus" data-i="${i}" data-op="+">+</button></div></div>`).join("");$$("[data-op]").forEach(b=>b.onclick=()=>change(+b.dataset.i,b.dataset.op));$$("[data-one]").forEach(b=>b.onclick=()=>addOne(+b.dataset.i));$("#display").textContent=value||"0"}
+function esc(s){return s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+$("#pad").onclick=e=>{let b=e.target.closest("button");if(!b)return;if(b.classList.contains("clear"))value="";else if(b.classList.contains("back"))value=value.slice(0,-1);else if(value.length<3)value+=(b.textContent);render()}
+function change(i,op){if(players[i].lives<=0)return;let n=Number(value||0);if(!n)return;let before=players[i].lives;players[i].lives=op==="+"?players[i].lives+n:Math.max(0,players[i].lives-n);flash((op==="+"?"+":"−")+n);if(op==="+")healSound();else if(before>0&&players[i].lives===0)deathSound();else hitSound(n);value="";render();comment30ForChange(before,players[i].lives,op,n);checkWin()}
+function addOne(i){if(players[i].lives<=0)return;players[i].lives++;flash("+1");healSound();render();comment30ForChange(before,players[i].lives,"+",1);checkWin()}
+
+const VOICE30={
+ hit:["30_hit_01.mp3","30_hit_02.mp3","30_hit_03.mp3"],
+ big_hit:["30_big_hit_01.mp3","30_big_hit_02.mp3","30_big_hit_03.mp3"],
+ heal:["30_heal_01.mp3","30_heal_02.mp3","30_heal_03.mp3"],
+ low:["30_low_01.mp3","30_low_02.mp3","30_low_03.mp3"],
+ critical:["30_critical_01.mp3","30_critical_02.mp3","30_critical_03.mp3"],
+ one:["30_one_01.mp3","30_one_02.mp3","30_one_03.mp3"],
+ dead:["30_dead_01.mp3","30_dead_02.mp3","30_dead_03.mp3"],
+ win:["30_win_01.mp3","30_win_02.mp3","30_win_03.mp3"]
+};
+let voice30Audio=null,lastVoice30={};
+function playVoice30(group){
+ if(!commentator30||!VOICE30[group])return;
+ const a=VOICE30[group]; let n=Math.floor(Math.random()*a.length);
+ if(a.length>1&&lastVoice30[group]===n)n=(n+1)%a.length;
+ lastVoice30[group]=n;
+ try{
+  if(voice30Audio){voice30Audio.pause();voice30Audio.currentTime=0}
+  voice30Audio=new Audio("assets/audio/30/"+a[n]); voice30Audio.volume=.95;
+  voice30Audio.play().catch(()=>{});
+ }catch(e){}
+}
+function comment30ForChange(before,after,op,amount){
+ if(!commentator30)return;
+ if(op==="+"){playVoice30("heal");return}
+ const alive=players.filter(p=>p.lives>0);
+ if(players.length>1&&alive.length===1){playVoice30("win");return}
+ if(after<=0){playVoice30("dead");return}
+ if(after===1){playVoice30("one");return}
+ if(after<=5){playVoice30("critical");return}
+ if(after<=10){playVoice30("low");return}
+ if(amount>=10){playVoice30("big_hit");return}
+ playVoice30("hit");
+}
+function updateCommentator30Button(){
+ const b=$("#commentator30"); if(!b)return;
+ b.textContent=commentator30?"K":"×";
+ b.title=commentator30?"Komentátor zapnutý":"Komentátor vypnutý";
+}
+$("#commentator30").onclick=()=>{
+ commentator30=!commentator30;
+ localStorage.setItem("tc_commentator_30_v1",commentator30?"1":"0");
+ if(!commentator30&&voice30Audio){voice30Audio.pause();voice30Audio.currentTime=0}
+ updateCommentator30Button();
+};
+updateCommentator30Button();
+
+function checkWin(){let alive=players.filter(p=>p.lives>0);if(players.length>1&&alive.length===1){if(!winSent30){winSent30=true;try{parent.postMessage({type:"tc30-win",player:alive[0].name},"*")}catch(e){}}setTimeout(()=>{$("#winner").textContent=alive[0].name+" · "+alive[0].lives+" ♥";$("#win").classList.add("on");winSound()},450)}}
+function flash(x){let f=$("#fx");f.textContent=x;f.className="";void f.offsetWidth;f.className="fx"}
+let ac;
+function audio(){try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();if(ac.state==="suspended")ac.resume();return ac}catch(e){return null}}
+function sfx(f,d=.11,delay=0,type="triangle",vol=.13){if(!sound)return;let a=audio();if(!a)return;let o=a.createOscillator(),g=a.createGain(),t=a.currentTime+delay;o.type=type;o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(Math.max(45,f*.72),t+d);g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+d)}
+function hitSound(n){sfx(n>=10?105:145,.22,0,"sawtooth",.16);sfx(n>=10?70:95,.28,.025,"triangle",.11)}
+function healSound(){sfx(430,.12,0,"sine",.11);sfx(650,.18,.07,"sine",.09)}
+function deathSound(){sfx(120,.38,0,"sawtooth",.18);sfx(74,.55,.10,"triangle",.16);sfx(48,.7,.22,"sine",.12)}
+function winSound(){[392,494,587,784].forEach((f,i)=>sfx(f,.32,i*.11,"triangle",.12))}
+document.addEventListener("pointerdown",()=>audio(),{once:true});
+$("#sound").onclick=()=>{sound=!sound;$("#sound").textContent=sound?"🔊":"🔇"};
+$("#gameMusic").onclick=()=>{try{parent.postMessage({type:"tc-game-music-toggle"},"*")}catch(e){}};
+window.addEventListener("message",e=>{const d=e.data||{};if(d.type==="tc-music-state"){$("#gameMusic").textContent=d.playing?"🎵":"🎵̸";}});
+$("#newGame").onclick=()=>$("#confirm").classList.add("on");$("#endGame").onclick=()=>$("#confirm").classList.add("on");$("#cancel").onclick=()=>$("#confirm").classList.remove("on");$("#yes").onclick=()=>{$("#confirm").classList.remove("on");$("#game").style.display="none";$("#setup").style.display="block";players=[];buildCount();buildNames(false)};
+$("#rematch").onclick=()=>{let n=players.map(p=>p.name);$("#win").classList.remove("on");start(n)};$("#newPlayers").onclick=()=>{$("#win").classList.remove("on");$("#game").style.display="none";$("#setup").style.display="block";players=[];buildCount();buildNames(false)};
+buildCount();buildNames(false);applyLang();
+
+$("#backToMain30").onclick=()=>{try{parent.postMessage({type:"tc30-close"},"*")}catch(e){}};
+function showSavedPlayers30(list){
+ const box=$("#savedPlayers30"), dst=$("#savedPlayers30List");
+ dst.innerHTML="";
+ (list||[]).forEach(name=>{
+   const b=document.createElement("button");
+   b.type="button"; b.textContent=name;
+   b.style.cssText="min-height:36px;padding:0 10px;border:1px solid #79512b;border-radius:8px;background:#120805;color:#d9ba81;font:900 11px Arial";
+   b.onclick=()=>{
+     const inputs=[...$$("#names input")];
+     const target=inputs.find(x=>!x.value.trim()||/^Hráč \d+$|^Player \d+$/.test(x.value.trim()));
+     if(target)target.value=name;
+   };
+   dst.appendChild(b);
+ });
+ box.style.display=(list&&list.length)?"block":"none";
+}
+window.addEventListener("message",e=>{
+ const d=e.data||{};
+ if(d.type==="tc30-players")showSavedPlayers30(d.players||[]);
+});
+try{parent.postMessage({type:"tc30-ready"},"*")}catch(e){}
+
+</script></body></html>

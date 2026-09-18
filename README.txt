@@ -15,6 +15,3 @@ TEST NA TELEFONU:
 DŮLEŽITÉ:
 PWA instalace a service worker nefungují správně při prostém otevření index.html jako lokálního souboru (file://).
 Toto je testovací build, nikoli finální verze.
-
-
-v0.5.1 FIX: Opraven JavaScript komentátora hry 30; výběr hráčů a spuštění hry znovu fungují. PWA cache bump.

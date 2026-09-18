@@ -1,9 +1,10 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="cs">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#080402">
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
+<meta content="#080402" name="theme-color"/>
 <title>TAVERN CLASH v0.2</title>
 <style>
 *{box-sizing:border-box}
@@ -441,145 +442,126 @@ body{display:flex;justify-content:center}
 #statsResetYes{border-color:#8c4937;color:#e9a995;background:#220b07}
 
 </style>
-
-<link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#070301">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="TAVERN CLASH">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
-
+<link href="manifest.webmanifest" rel="manifest"/>
+<meta content="#070301" name="theme-color"/>
+<meta content="yes" name="mobile-web-app-capable"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+<meta content="TAVERN CLASH" name="apple-mobile-web-app-title"/>
+<link href="icons/icon-192.png" rel="apple-touch-icon"/>
 </head>
 <body>
 <main id="app">
-<audio id="music" loop preload="auto"><source src="assets/asset-3-534a26b685a6.mp3" type="audio/mpeg"></audio>
-
-
-<section id="menu" class="screen active">
-  <div class="menuExact"></div>
-
-  <!-- invisible functional hit areas aligned to the artwork -->
-  <button id="musicArtHit" class="artHit" aria-label="Hudba"></button>
-  <button id="czArtHit" class="artHit" aria-label="Čeština"></button>
-  <button id="enArtHit" class="artHit" aria-label="English"></button>
-  <button id="fsArtHit" class="artHit" aria-label="Fullscreen"></button>
-
-  <button id="diceArtHit" class="artHit" aria-label="Kostky"></button>
-  <button id="cardsArtHit" class="artHit" aria-label="Karty"></button>
-  <button id="dartsArtHit" class="artHit" aria-label="Šipky"></button>
-
-  <!-- only text overlays needed for real CZ/EN translation -->
-  <div id="diceLive" class="liveLabel">KOSTKY</div>
-  <div id="cardsLive" class="liveLabel">KARTY</div>
-  <div id="dartsLive" class="liveLabel">ŠIPKY</div>
-
-  <div class="menuLowerActions">
-  <button id="playersMenuHit" type="button">HRÁČI</button>
-  <button id="statsMenuHit" type="button">STATISTIKY</button>
+<audio id="music" loop="" preload="auto"><source src="assets/asset-3-534a26b685a6.mp3" type="audio/mpeg"/></audio>
+<section class="screen active" id="menu">
+<div class="menuExact"></div>
+<!-- invisible functional hit areas aligned to the artwork -->
+<button aria-label="Hudba" class="artHit" id="musicArtHit"></button>
+<button aria-label="Čeština" class="artHit" id="czArtHit"></button>
+<button aria-label="English" class="artHit" id="enArtHit"></button>
+<button aria-label="Fullscreen" class="artHit" id="fsArtHit"></button>
+<button aria-label="Kostky" class="artHit" id="diceArtHit"></button>
+<button aria-label="Karty" class="artHit" id="cardsArtHit"></button>
+<button aria-label="Šipky" class="artHit" id="dartsArtHit"></button>
+<!-- only text overlays needed for real CZ/EN translation -->
+<div class="liveLabel" id="diceLive">KOSTKY</div>
+<div class="liveLabel" id="cardsLive">KARTY</div>
+<div class="liveLabel" id="dartsLive">ŠIPKY</div>
+<div class="menuLowerActions">
+<button id="playersMenuHit" type="button">HRÁČI</button>
+<button id="statsMenuHit" type="button">STATISTIKY</button>
 </div>
-  <div id="toast" class="toast"></div>
+<div class="toast" id="toast"></div>
 </section>
-
-
-
-
-
 <section id="statsScreen">
-  <div class="statsPage">
-    <div class="statsTop">
-      <button id="statsBack" type="button">← MENU</button>
-      <h2 id="statsTitle">STATISTIKY</h2>
-      <div style="width:72px"></div>
-    </div>
-    <div class="statsSummary">
-      <div id="statsSummaryTitle" class="statsSummaryTitle">VÝHRY HRÁČŮ</div>
-      <div id="statsSummarySub" class="statsSummarySub">Počet vítězství v jednotlivých hrách.</div>
-    </div>
-    <div class="statsResetRow">
-      <button id="statsReset" type="button">RESET STATISTIK</button>
-    </div>
-    <div id="statsList"></div>
-  </div>
+<div class="statsPage">
+<div class="statsTop">
+<button id="statsBack" type="button">← MENU</button>
+<h2 id="statsTitle">STATISTIKY</h2>
+<div style="width:72px"></div>
+</div>
+<div class="statsSummary">
+<div class="statsSummaryTitle" id="statsSummaryTitle">VÝHRY HRÁČŮ</div>
+<div class="statsSummarySub" id="statsSummarySub">Počet vítězství v jednotlivých hrách.</div>
+</div>
+<div class="statsResetRow">
+<button id="statsReset" type="button">RESET STATISTIK</button>
+</div>
+<div id="statsList"></div>
+</div>
 </section>
-
-<div id="statsResetConfirm" role="dialog" aria-modal="true">
-  <div class="statsConfirmBox">
-    <h3 id="statsResetTitle">Resetovat statistiky?</h3>
-    <p id="statsResetText">Všechna zaznamenaná vítězství budou vynulována. Tuto akci nelze vrátit zpět.</p>
-    <div class="statsConfirmBtns">
-      <button id="statsResetNo" type="button">ZRUŠIT</button>
-      <button id="statsResetYes" type="button">RESETOVAT</button>
-    </div>
-  </div>
+<div aria-modal="true" id="statsResetConfirm" role="dialog">
+<div class="statsConfirmBox">
+<h3 id="statsResetTitle">Resetovat statistiky?</h3>
+<p id="statsResetText">Všechna zaznamenaná vítězství budou vynulována. Tuto akci nelze vrátit zpět.</p>
+<div class="statsConfirmBtns">
+<button id="statsResetNo" type="button">ZRUŠIT</button>
+<button id="statsResetYes" type="button">RESETOVAT</button>
+</div>
+</div>
 </div>
 <section id="playersScreen">
-  <div class="playersPage">
-    <div class="playersTop">
-      <button id="playersBack" type="button">← MENU</button>
-      <h2 id="playersTitle">HRÁČI</h2>
-      <div style="width:72px"></div>
-    </div>
-
-    <div class="playerAdd">
-      <div class="playerAddRow">
-        <input id="newPlayerName" type="text" maxlength="24" placeholder="Jméno hráče">
-        <button id="addPlayer" type="button">PŘIDAT</button>
-      </div>
-      <div id="playerHint" class="playerHint">Hráči se ukládají v tomto zařízení a později je vybereš v jednotlivých hrách.</div>
-    </div>
-
-    <div id="playersList"></div>
-  </div>
+<div class="playersPage">
+<div class="playersTop">
+<button id="playersBack" type="button">← MENU</button>
+<h2 id="playersTitle">HRÁČI</h2>
+<div style="width:72px"></div>
+</div>
+<div class="playerAdd">
+<div class="playerAddRow">
+<input id="newPlayerName" maxlength="24" placeholder="Jméno hráče" type="text"/>
+<button id="addPlayer" type="button">PŘIDAT</button>
+</div>
+<div class="playerHint" id="playerHint">Hráči se ukládají v tomto zařízení a později je vybereš v jednotlivých hrách.</div>
+</div>
+<div id="playersList"></div>
+</div>
 </section>
 <section id="categoryScreen">
-  <div class="catPageExact">
-    <div class="catTopExact">
-      <button id="catBackExact">← MENU</button>
-      <h2 id="catTitleExact"></h2>
-    </div>
-    <div id="catGamesExact"></div>
-  </div>
+<div class="catPageExact">
+<div class="catTopExact">
+<button id="catBackExact">← MENU</button>
+<h2 id="catTitleExact"></h2>
+</div>
+<div id="catGamesExact"></div>
+</div>
 </section>
-<section id="game" class="screen">
- <div id="gameFx"></div>
- <i class="ember" style="left:12%;--d:5.7s;--delay:-1s;--drift:18px"></i>
- <i class="ember" style="left:27%;--d:7.1s;--delay:-4s;--drift:-13px"></i>
- <i class="ember" style="left:64%;--d:6.4s;--delay:-2s;--drift:22px"></i>
- <i class="ember" style="left:83%;--d:8.2s;--delay:-6s;--drift:-18px"></i>
- <div class="gameShell">
-  <div class="top">
-   <button id="back">← MENU</button>
-   <div class="title"><strong>TAVERN CLASH</strong><small>10K BATTLE</small></div>
-   <button id="gameLang" class="langGame">CZ</button>
-  </div>
-
-  <section id="setup" class="panel">
-   <h1>10K BATTLE</h1>
-   <div class="subtitle" data-t="choose"></div>
-   <div id="count" class="count"></div>
-   <div id="names" class="names"></div>
-   <button id="start" class="start" data-t="start"></button>
-  </section>
-
-  <section id="play">
-   <div id="players" class="players"></div>
-   <div class="turn panel"><div id="turnWho" class="turnWho"></div><div id="turnScore" class="turnScore">+0</div></div>
-   <div class="scores"><button data-add="50">+50</button><button data-add="100">+100</button><button data-add="1000">+1000</button></div>
-   <div class="actions">
-    <button id="undo" data-t="undo"></button>
-    <button id="nothing" class="nothing" data-t="nothing"></button>
-    <button id="next" class="next" data-t="next"></button>
-   </div>
-   <div id="event"></div>
-  </section>
- </div>
- <div id="win" class="win"><div class="winBox"><h2 data-t="victory"></h2><p id="winner"></p><button id="again" data-t="again"></button></div></div>
+<section class="screen" id="game">
+<div id="gameFx"></div>
+<i class="ember" style="left:12%;--d:5.7s;--delay:-1s;--drift:18px"></i>
+<i class="ember" style="left:27%;--d:7.1s;--delay:-4s;--drift:-13px"></i>
+<i class="ember" style="left:64%;--d:6.4s;--delay:-2s;--drift:22px"></i>
+<i class="ember" style="left:83%;--d:8.2s;--delay:-6s;--drift:-18px"></i>
+<div class="gameShell">
+<div class="top">
+<button id="back">← MENU</button>
+<div class="title"><strong>TAVERN CLASH</strong><small>10K BATTLE</small></div>
+<button class="langGame" id="gameLang">CZ</button>
+</div>
+<section class="panel" id="setup">
+<h1>10K BATTLE</h1>
+<div class="subtitle" data-t="choose"></div>
+<div class="count" id="count"></div>
+<div class="names" id="names"></div>
+<button class="start" data-t="start" id="start"></button>
+</section>
+<section id="play">
+<div class="players" id="players"></div>
+<div class="turn panel"><div class="turnWho" id="turnWho"></div><div class="turnScore" id="turnScore">+0</div></div>
+<div class="scores"><button data-add="50">+50</button><button data-add="100">+100</button><button data-add="1000">+1000</button></div>
+<div class="actions">
+<button data-t="undo" id="undo"></button>
+<button class="nothing" data-t="nothing" id="nothing"></button>
+<button class="next" data-t="next" id="next"></button>
+</div>
+<div id="event"></div>
+</section>
+</div>
+<div class="win" id="win"><div class="winBox"><h2 data-t="victory"></h2><p id="winner"></p><button data-t="again" id="again"></button></div></div>
 </section>
 </main>
-
 <section id="game10kHost">
-  <iframe id="game10kFrame" title="10K Battle" srcdoc="&lt;!doctype html&gt;
+<iframe id="game10kFrame" srcdoc="&lt;!doctype html&gt;
 &lt;html lang=&quot;cs&quot;&gt;
 &lt;head&gt;
 &lt;meta charset=&quot;utf-8&quot;&gt;
@@ -987,7 +969,7 @@ function render(){
  const projected=Math.min(100,((players[active].score+turn)/10000)*100);
  $(&quot;#progress&quot;).style.width=projected+&quot;%&quot;;
 }
-function escapeHtml(s){return s.replace(/[&amp;&lt;&gt;&quot;&#x27;]/g,m=&gt;({&quot;&amp;&quot;:&quot;&amp;amp;&quot;,&quot;&lt;&quot;:&quot;&amp;lt;&quot;,&quot;&gt;&quot;:&quot;&amp;gt;&quot;,&#x27;&quot;&#x27;:&quot;&amp;quot;&quot;,&quot;&#x27;&quot;:&quot;&amp;#39;&quot;}[m]))}
+function escapeHtml(s){return s.replace(/[&amp;&lt;&gt;&quot;']/g,m=&gt;({&quot;&amp;&quot;:&quot;&amp;amp;&quot;,&quot;&lt;&quot;:&quot;&amp;lt;&quot;,&quot;&gt;&quot;:&quot;&amp;gt;&quot;,'&quot;':&quot;&amp;quot;&quot;,&quot;'&quot;:&quot;&amp;#39;&quot;}[m]))}
 
 $$(&quot;[data-add]&quot;).forEach(b=&gt;b.addEventListener(&quot;click&quot;,()=&gt;{
  if(!players.length)return;
@@ -1058,7 +1040,7 @@ function ddText(kind,points=0){
  const cs=lang===&quot;cs&quot;;
  if(kind===&quot;legendary&quot;) return {
    rune:&quot;🐉&quot;,
-   title:cs?&quot;DRAČÍ PŘÍZEŇ&quot;:&quot;DRAGON&#x27;S FAVOR&quot;,
+   title:cs?&quot;DRAČÍ PŘÍZEŇ&quot;:&quot;DRAGON'S FAVOR&quot;,
    sub:cs?&quot;Hod, o kterém se bude zpívat u ohně.&quot;:&quot;A roll worthy of tavern legends.&quot;,
    score:&quot;+&quot;+points
  };
@@ -1271,9 +1253,8 @@ $(&quot;#backToApp&quot;).addEventListener(&quot;click&quot;,()=&gt;{
 buildCount();buildNames(false);applyLang();renderSavedPlayers();
 &lt;/script&gt;
 &lt;/body&gt;
-&lt;/html&gt;"></iframe>
+&lt;/html&gt;" title="10K Battle"></iframe>
 </section>
-
 <script>
 const T={
 cs:{choose:"Vyber počet hráčů a pojmenuj družinu.",start:"ZAČÍT BITVU",undo:"↩ ZPĚT",nothing:"☠ NIC",next:"DALŠÍ",victory:"VÍTĚZSTVÍ!",again:"NOVÁ BITVA",player:"Hráč",turn:"Na tahu",third:"Třetí NIC — skóre padá na 0!",musicOn:"Hudba zapnuta",musicOff:"Hudba vypnuta"},
@@ -1654,127 +1635,9 @@ window.addEventListener("message",e=>{
 });
 
 </script>
-
 <section id="game30Host" style="position:fixed;inset:0;z-index:100000;background:#050201;display:none">
-  <iframe id="game30Frame" title="30" style="display:block;width:100%;height:100%;border:0;background:#050201" srcdoc="&lt;!doctype html&gt;
-&lt;html lang=&quot;cs&quot;&gt;
-&lt;head&gt;
-&lt;meta charset=&quot;utf-8&quot;&gt;
-&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1,viewport-fit=cover&quot;&gt;
-&lt;title&gt;TAVERN CLASH — 30&lt;/title&gt;
-&lt;style&gt;
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#050201;color:#efd39a;font-family:Georgia,serif}
-button,input{font:inherit}button{cursor:pointer}
-#app{min-height:100dvh;max-width:768px;margin:auto;position:relative;overflow:hidden;background:linear-gradient(#080402d9,#020101f5),url(&quot;assets/asset-1-c7aa3583019c.png&quot;) center/cover}
-.shell{min-height:100dvh;padding:max(14px,env(safe-area-inset-top)) 13px max(14px,env(safe-area-inset-bottom));display:flex;flex-direction:column}
-.top{display:flex;align-items:center;gap:8px}.brand{flex:1;text-align:center}.brand b{display:block;color:#efc66d;font-size:34px;text-shadow:0 4px 5px #000}.brand small{font:900 9px Arial;color:#9f825d;letter-spacing:1.4px}
-.icon{width:43px;height:43px;border:1px solid #79512b;border-radius:10px;background:#160b06;color:#dfbd80;font-weight:1000}
-.panel{border:1px solid #76502b;border-radius:15px;background:linear-gradient(#2b170cF2,#0c0603FA);box-shadow:inset 0 0 22px #0008,0 7px 18px #0009}
-#setup{margin:auto 0;padding:22px 17px}#setup h1{text-align:center;margin:0;color:#efc66d;font-size:46px}#setup p{text-align:center;color:#a98c65;font:800 12px Arial}
-.count{display:flex;justify-content:center;gap:7px;flex-wrap:wrap}.count button{width:45px;height:45px;border:1px solid #79512b;border-radius:9px;background:#100805;color:#d5b67e;font-weight:1000}.count button.on{background:#70431d;color:#fff0bc;border-color:#d19a4d}
-.names{display:grid;gap:8px;max-width:450px;margin:17px auto}.names input{width:100%;padding:12px;border:1px solid #60401f;border-radius:9px;background:#090402;color:#f1d49b;font:800 15px Arial}
-.start{display:block;width:min(100%,450px);margin:auto;padding:15px;border:1px solid #ca9145;border-radius:11px;background:linear-gradient(#925b29,#3e1f0d);color:#ffedba;font-weight:1000}
-#game{display:none;flex:1;min-height:0}.toolbar{display:flex;gap:7px;margin:9px 0}.toolbar button{flex:1;min-height:40px;border:1px solid #674522;border-radius:9px;background:#130905;color:#cbaa75;font:900 10px Arial}
-.players{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;max-height:45dvh;overflow:auto}
-.player{padding:9px;border:1px solid #5b3b1e;border-radius:11px;background:linear-gradient(135deg,#27150b,#0b0503);transition:.25s}
-.player.dead{opacity:.43;filter:grayscale(.8)}.phead{display:flex;align-items:center;gap:8px}.avatar{--hp:1;position:relative;width:54px;height:54px;border-radius:50%;overflow:hidden;border:2px solid #a77739;background:radial-gradient(circle at 45% 28%,#765331 0 17%,#2b170c 44%,#080301 75%);box-shadow:inset 0 0 12px #000,0 2px 8px #000;transition:.35s}
-.avatar .head{position:absolute;left:17px;top:12px;width:20px;height:23px;border-radius:48% 48% 43% 43%;background:linear-gradient(100deg,#8f5d36,#d19a64 48%,#6d4026);box-shadow:inset -4px -2px 5px #3b1d10,0 2px 4px #000}
-.avatar .hair{position:absolute;left:14px;top:8px;width:27px;height:13px;border-radius:60% 60% 30% 30%;background:linear-gradient(#3b2416,#120a06);box-shadow:0 2px 3px #000}
-.avatar .body{position:absolute;left:8px;bottom:-10px;width:39px;height:31px;border-radius:48% 48% 12% 12%;background:linear-gradient(110deg,#6f522f,#1a2025 45%,#49351f);border-top:2px solid #a9854f;box-shadow:inset 0 4px 7px #0008}
-.avatar .eye{position:absolute;top:21px;width:3px;height:2px;border-radius:50%;background:#f4d18b;box-shadow:0 0 3px #ffd276;z-index:4}.avatar .e1{left:21px}.avatar .e2{left:31px}
-.avatar .scar{position:absolute;z-index:6;left:30px;top:17px;width:1px;height:14px;background:#7d1d14;transform:rotate(20deg);opacity:calc(1 - var(--hp))}
-.avatar:after{content:&quot;&quot;;position:absolute;inset:0;background:rgba(60,0,0,calc((1 - var(--hp)) * .52));box-shadow:inset 0 0 calc((1 - var(--hp))*25px) #000;pointer-events:none}
-.avatar.hurt .head{filter:saturate(.7)}.avatar.critical{border-color:#7b2921;animation:pulsehurt 1.15s infinite}.avatar.deadav{filter:grayscale(1) brightness(.38);border-color:#40352d}.avatar.deadav .head{transform:rotate(13deg) translateY(4px)}
-@keyframes pulsehurt{50%{box-shadow:inset 0 0 15px #000,0 0 12px #7d1711}}.pinfo{min-width:0;flex:1}.pname{font:1000 13px Arial;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.life{color:#efc66d;font:1000 25px Arial}.state{font:800 8px Arial;color:#967b59}
-.controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-top:8px}.controls button{min-height:38px;border-radius:8px;border:1px solid #684522;background:#120805;color:#d9ba81;font:1000 14px Arial}.controls .minus{border-color:#743a31;color:#e0a08b}.controls .plus{border-color:#6e6a31;color:#d9d98b}.controls .one{border-color:#a67534;background:#40230f;color:#f5d48c}
-.entry{margin-top:auto;padding-top:9px}.display{height:63px;display:flex;align-items:center;justify-content:center;color:#f1c96f;font:1000 43px Arial;letter-spacing:2px}.display small{font-size:12px;color:#8f7554;margin-right:8px}
-.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:7px}.pad button{min-height:49px;border:1px solid #674522;border-radius:9px;background:linear-gradient(#28150b,#0e0704);color:#e2c48c;font:1000 20px Arial}.pad .clear{color:#dc9c88;border-color:#744034}.pad .back{color:#bfa171}
-#fx{position:absolute;z-index:80;left:50%;top:42%;transform:translate(-50%,-50%);opacity:0;pointer-events:none;font:1000 55px Georgia;color:#ffd47c;text-shadow:0 0 15px #c87828,0 5px 7px #000}.fx{animation:fx .7s ease-out}@keyframes fx{0%{opacity:0;transform:translate(-50%,-35%) scale(.6)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}100%{opacity:0;transform:translate(-50%,-75%) scale(.95)}}
-.overlay{position:absolute;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:22px;background:#040201ed}.overlay.on{display:flex}.dialog{width:min(100%,440px);padding:23px;text-align:center;border:1px solid #a97538;border-radius:16px;background:radial-gradient(circle at top,#472611,#100704 68%)}.dialog h2{margin:0;color:#efc66d;font-size:36px}.dialog p{font:800 12px Arial;color:#b99b70}.dialog button{width:100%;margin-top:8px;min-height:47px;border:1px solid #a97538;border-radius:9px;background:#48250e;color:#ffe6ad;font-weight:1000}
-@media(max-width:370px){.avatar{width:48px;height:48px}.life{font-size:22px}.pad button{min-height:44px}}
-&lt;/style&gt;&lt;/head&gt;
-&lt;body&gt;&lt;main id=&quot;app&quot;&gt;&lt;div class=&quot;shell&quot;&gt;
-&lt;div class=&quot;top&quot;&gt;&lt;button class=&quot;icon&quot; id=&quot;sound&quot; title=&quot;Efekty&quot;&gt;🔊&lt;/button&gt;&lt;button class=&quot;icon&quot; id=&quot;commentator30&quot; title=&quot;Komentátor&quot;&gt;🗣&lt;/button&gt;&lt;button class=&quot;icon&quot; id=&quot;gameMusic&quot; title=&quot;Hudba&quot;&gt;🎵&lt;/button&gt;&lt;div class=&quot;brand&quot;&gt;&lt;b&gt;30&lt;/b&gt;&lt;small&gt;TAVERN CLASH · DICE&lt;/small&gt;&lt;/div&gt;&lt;button class=&quot;icon&quot; id=&quot;lang&quot;&gt;CZ&lt;/button&gt;&lt;/div&gt;
-&lt;section id=&quot;setup&quot; class=&quot;panel&quot;&gt;&lt;h1&gt;30&lt;/h1&gt;&lt;p id=&quot;setupText&quot;&gt;Vyber počet hráčů a zadej jejich jména.&lt;/p&gt;&lt;div id=&quot;count&quot; class=&quot;count&quot;&gt;&lt;/div&gt;&lt;div id=&quot;savedPlayers30&quot; style=&quot;max-width:450px;margin:10px auto 8px;display:none&quot;&gt;
-      &lt;div style=&quot;font:900 10px Arial;color:#a98c65;margin-bottom:6px&quot;&gt;ULOŽENÍ HRÁČI&lt;/div&gt;
-      &lt;div id=&quot;savedPlayers30List&quot; style=&quot;display:flex;gap:6px;flex-wrap:wrap&quot;&gt;&lt;/div&gt;
-    &lt;/div&gt;
-    &lt;div id=&quot;names&quot; class=&quot;names&quot;&gt;&lt;/div&gt;&lt;button id=&quot;start&quot; class=&quot;start&quot;&gt;ZAČÍT HRU&lt;/button&gt;&lt;/section&gt;
-&lt;section id=&quot;game&quot;&gt;&lt;div class=&quot;toolbar&quot;&gt;&lt;button id=&quot;backToMain30&quot;&gt;← MENU&lt;/button&gt;&lt;button id=&quot;newGame&quot;&gt;NOVÁ HRA&lt;/button&gt;&lt;button id=&quot;endGame&quot;&gt;UKONČIT HRU&lt;/button&gt;&lt;/div&gt;&lt;div id=&quot;players&quot; class=&quot;players&quot;&gt;&lt;/div&gt;
-&lt;div class=&quot;entry&quot;&gt;&lt;div class=&quot;display panel&quot;&gt;&lt;small id=&quot;amountText&quot;&gt;HODNOTA&lt;/small&gt;&lt;span id=&quot;display&quot;&gt;0&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;pad&quot; id=&quot;pad&quot;&gt;
-&lt;button&gt;1&lt;/button&gt;&lt;button&gt;2&lt;/button&gt;&lt;button&gt;3&lt;/button&gt;&lt;button&gt;4&lt;/button&gt;&lt;button&gt;5&lt;/button&gt;&lt;button&gt;6&lt;/button&gt;&lt;button&gt;7&lt;/button&gt;&lt;button&gt;8&lt;/button&gt;&lt;button&gt;9&lt;/button&gt;&lt;button class=&quot;clear&quot;&gt;C&lt;/button&gt;&lt;button&gt;0&lt;/button&gt;&lt;button class=&quot;back&quot;&gt;⌫&lt;/button&gt;
-&lt;/div&gt;&lt;/div&gt;&lt;/section&gt;&lt;/div&gt;
-&lt;div id=&quot;fx&quot;&gt;&lt;/div&gt;
-&lt;div id=&quot;win&quot; class=&quot;overlay&quot;&gt;&lt;div class=&quot;dialog&quot;&gt;&lt;h2 id=&quot;winTitle&quot;&gt;VÍTĚZ!&lt;/h2&gt;&lt;p id=&quot;winner&quot;&gt;&lt;/p&gt;&lt;button id=&quot;rematch&quot;&gt;ODVETA&lt;/button&gt;&lt;button id=&quot;newPlayers&quot;&gt;NOVÍ HRÁČI&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;div id=&quot;confirm&quot; class=&quot;overlay&quot;&gt;&lt;div class=&quot;dialog&quot;&gt;&lt;h2 id=&quot;confirmTitle&quot;&gt;Ukončit hru?&lt;/h2&gt;&lt;p id=&quot;confirmText&quot;&gt;Rozehraná hra bude zahozena.&lt;/p&gt;&lt;button id=&quot;cancel&quot;&gt;ZRUŠIT&lt;/button&gt;&lt;button id=&quot;yes&quot;&gt;UKONČIT&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;/main&gt;
-&lt;script&gt;
-const $=s=&gt;document.querySelector(s),$$=s=&gt;document.querySelectorAll(s);
-const T={cs:{setup:&quot;Vyber počet hráčů a zadej jejich jména.&quot;,player:&quot;Hráč&quot;,start:&quot;ZAČÍT HRU&quot;,new:&quot;NOVÁ HRA&quot;,end:&quot;UKONČIT HRU&quot;,value:&quot;HODNOTA&quot;,life:&quot;životy&quot;,dead:&quot;VYŘAZEN&quot;,win:&quot;VÍTĚZ!&quot;,rematch:&quot;ODVETA&quot;,newp:&quot;NOVÍ HRÁČI&quot;,ct:&quot;Ukončit hru?&quot;,cx:&quot;Rozehraná hra bude zahozena.&quot;,cancel:&quot;ZRUŠIT&quot;},en:{setup:&quot;Choose the number of players and enter their names.&quot;,player:&quot;Player&quot;,start:&quot;START GAME&quot;,new:&quot;NEW GAME&quot;,end:&quot;END GAME&quot;,value:&quot;VALUE&quot;,life:&quot;lives&quot;,dead:&quot;ELIMINATED&quot;,win:&quot;WINNER!&quot;,rematch:&quot;REMATCH&quot;,newp:&quot;NEW PLAYERS&quot;,ct:&quot;End game?&quot;,cx:&quot;The current game will be discarded.&quot;,cancel:&quot;CANCEL&quot;}};
-let lang=&quot;cs&quot;,count=2,players=[],value=&quot;&quot;,sound=true,winSent30=false,commentator30=localStorage.getItem(&quot;tc_commentator_30_v1&quot;)!==&quot;0&quot;;
-function applyLang(){const t=T[lang];$(&quot;#lang&quot;).textContent=lang.toUpperCase();$(&quot;#setupText&quot;).textContent=t.setup;$(&quot;#start&quot;).textContent=t.start;$(&quot;#newGame&quot;).textContent=t.new;$(&quot;#endGame&quot;).textContent=t.end;$(&quot;#amountText&quot;).textContent=t.value;$(&quot;#winTitle&quot;).textContent=t.win;$(&quot;#rematch&quot;).textContent=t.rematch;$(&quot;#newPlayers&quot;).textContent=t.newp;$(&quot;#confirmTitle&quot;).textContent=t.ct;$(&quot;#confirmText&quot;).textContent=t.cx;$(&quot;#cancel&quot;).textContent=t.cancel;$(&quot;#yes&quot;).textContent=t.end;buildNames(true);render()}
-$(&quot;#lang&quot;).onclick=()=&gt;{lang=lang===&quot;cs&quot;?&quot;en&quot;:&quot;cs&quot;;applyLang()};
-function buildCount(){count=Math.max(2,count);$(&quot;#count&quot;).innerHTML=&quot;&quot;;for(let i=2;i&lt;=6;i++){let b=document.createElement(&quot;button&quot;);b.textContent=i;b.className=i===count?&quot;on&quot;:&quot;&quot;;b.onclick=()=&gt;{count=i;buildCount();buildNames(true)};$(&quot;#count&quot;).appendChild(b)}}
-function buildNames(keep){let old=keep?[...$$(&quot;#names input&quot;)].map(x=&gt;x.value):[];$(&quot;#names&quot;).innerHTML=&quot;&quot;;for(let i=0;i&lt;count;i++){let x=document.createElement(&quot;input&quot;);x.maxLength=18;x.value=old[i]||`${T[lang].player} ${i+1}`;$(&quot;#names&quot;).appendChild(x)}}
-function start(names=null){let n=names||[...$$(&quot;#names input&quot;)].map((x,i)=&gt;x.value.trim()||`${T[lang].player} ${i+1}`);players=n.map(name=&gt;({name,lives:30}));value=&quot;&quot;;winSent30=false;$(&quot;#setup&quot;).style.display=&quot;none&quot;;$(&quot;#game&quot;).style.display=&quot;flex&quot;;$(&quot;#game&quot;).style.flexDirection=&quot;column&quot;;sfx(392,.08);sfx(523,.12,.08);render()}
-$(&quot;#start&quot;).onclick=()=&gt;start();
-function avatarClass(l){return l&lt;=0?&quot;deadav&quot;:l&lt;=7?&quot;critical&quot;:l&lt;22?&quot;hurt&quot;:&quot;&quot;} function avatarHTML(l){let hp=Math.max(0,Math.min(1,l/30));return `&lt;div class=&quot;avatar ${avatarClass(l)}&quot; style=&quot;--hp:${hp}&quot;&gt;&lt;span class=&quot;body&quot;&gt;&lt;/span&gt;&lt;span class=&quot;head&quot;&gt;&lt;/span&gt;&lt;span class=&quot;hair&quot;&gt;&lt;/span&gt;&lt;span class=&quot;eye e1&quot;&gt;&lt;/span&gt;&lt;span class=&quot;eye e2&quot;&gt;&lt;/span&gt;&lt;span class=&quot;scar&quot;&gt;&lt;/span&gt;&lt;/div&gt;`}
-function state(l){return l&lt;=0?T[lang].dead:(l+&quot; &quot;+T[lang].life)}
-function render(){if(!players.length)return;$(&quot;#players&quot;).innerHTML=players.map((p,i)=&gt;`&lt;div class=&quot;player ${p.lives&lt;=0?&quot;dead&quot;:&quot;&quot;}&quot;&gt;&lt;div class=&quot;phead&quot;&gt;${avatarHTML(p.lives)}&lt;div class=&quot;pinfo&quot;&gt;&lt;div class=&quot;pname&quot;&gt;${esc(p.name)}&lt;/div&gt;&lt;div class=&quot;state&quot;&gt;${state(p.lives)}&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;life&quot;&gt;${p.lives}&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;controls&quot;&gt;&lt;button class=&quot;minus&quot; data-i=&quot;${i}&quot; data-op=&quot;-&quot;&gt;−&lt;/button&gt;&lt;button class=&quot;one&quot; data-i=&quot;${i}&quot; data-one=&quot;1&quot;&gt;+1&lt;/button&gt;&lt;button class=&quot;plus&quot; data-i=&quot;${i}&quot; data-op=&quot;+&quot;&gt;+&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;`).join(&quot;&quot;);$$(&quot;[data-op]&quot;).forEach(b=&gt;b.onclick=()=&gt;change(+b.dataset.i,b.dataset.op));$$(&quot;[data-one]&quot;).forEach(b=&gt;b.onclick=()=&gt;addOne(+b.dataset.i));$(&quot;#display&quot;).textContent=value||&quot;0&quot;}
-function esc(s){return s.replace(/[&amp;&lt;&gt;&quot;&#x27;]/g,m=&gt;({&quot;&amp;&quot;:&quot;&amp;amp;&quot;,&quot;&lt;&quot;:&quot;&amp;lt;&quot;,&quot;&gt;&quot;:&quot;&amp;gt;&quot;,&#x27;&quot;&#x27;:&quot;&amp;quot;&quot;,&quot;&#x27;&quot;:&quot;&amp;#39;&quot;}[m]))}
-$(&quot;#pad&quot;).onclick=e=&gt;{let b=e.target.closest(&quot;button&quot;);if(!b)return;if(b.classList.contains(&quot;clear&quot;))value=&quot;&quot;;else if(b.classList.contains(&quot;back&quot;))value=value.slice(0,-1);else if(value.length&lt;3)value+=(b.textContent);render()}
-function change(i,op){if(players[i].lives&lt;=0)return;let n=Number(value||0);if(!n)return;let before=players[i].lives;players[i].lives=op===&quot;+&quot;?players[i].lives+n:Math.max(0,players[i].lives-n);flash((op===&quot;+&quot;?&quot;+&quot;:&quot;−&quot;)+n);if(op===&quot;+&quot;)healSound();else if(before&gt;0&amp;&amp;players[i].lives===0)deathSound();else hitSound(n);value=&quot;&quot;;render();comment30ForChange(i,before,players[i].lives,op,n);checkWin()}
-function addOne(i){if(players[i].lives&lt;=0)return;let before=players[i].lives;players[i].lives++;flash(&quot;+1&quot;);healSound();render();comment30ForChange(i,before,players[i].lives,&quot;+&quot;,1);checkWin()}
-const VOICE30={hit:[&quot;30_hit_01.mp3&quot;,&quot;30_hit_02.mp3&quot;,&quot;30_hit_03.mp3&quot;],big_hit:[&quot;30_big_hit_01.mp3&quot;,&quot;30_big_hit_02.mp3&quot;,&quot;30_big_hit_03.mp3&quot;],heal:[&quot;30_heal_01.mp3&quot;,&quot;30_heal_02.mp3&quot;,&quot;30_heal_03.mp3&quot;],low:[&quot;30_low_01.mp3&quot;,&quot;30_low_02.mp3&quot;,&quot;30_low_03.mp3&quot;],critical:[&quot;30_critical_01.mp3&quot;,&quot;30_critical_02.mp3&quot;,&quot;30_critical_03.mp3&quot;],one:[&quot;30_one_01.mp3&quot;,&quot;30_one_02.mp3&quot;,&quot;30_one_03.mp3&quot;],dead:[&quot;30_dead_01.mp3&quot;,&quot;30_dead_02.mp3&quot;,&quot;30_dead_03.mp3&quot;],win:[&quot;30_win_01.mp3&quot;,&quot;30_win_02.mp3&quot;,&quot;30_win_03.mp3&quot;]};
-let voice30Audio=null,lastVoice30={};
-function playVoice30(group){if(!commentator30||!VOICE30[group])return;let a=VOICE30[group],idx=Math.floor(Math.random()*a.length);if(a.length&gt;1&amp;&amp;lastVoice30[group]===idx)idx=(idx+1+Math.floor(Math.random()*(a.length-1)))%a.length;lastVoice30[group]=idx;try{if(voice30Audio){voice30Audio.pause();voice30Audio.currentTime=0}voice30Audio=new Audio(&quot;assets/audio/30/&quot;+a[idx]);voice30Audio.volume=.95;voice30Audio.play().catch(()=&gt;{})}catch(e){}}
-function comment30ForChange(i,before,after,op,amount){if(!commentator30)return;if(op===&quot;+&quot;){playVoice30(&quot;heal&quot;);return;}const alive=players.filter(p=&gt;p.lives&gt;0);if(players.length&gt;1&amp;&amp;alive.length===1){playVoice30(&quot;win&quot;);return;}if(after&lt;=0){playVoice30(&quot;dead&quot;);return;}if(after===1){playVoice30(&quot;one&quot;);return;}if(after&lt;=5){playVoice30(&quot;critical&quot;);return;}if(after&lt;=10){playVoice30(&quot;low&quot;);return;}if(amount&gt;=10){playVoice30(&quot;big_hit&quot;);return;}playVoice30(&quot;hit&quot;);}
-function updateCommentator30Button(){let b=$(&quot;#commentator30&quot;);if(b){b.textContent=commentator30?&quot;🗣&quot;:&quot;×&quot;;b.title=commentator30?&quot;Komentátor zapnutý&quot;:&quot;Komentátor vypnutý&quot;}}
-$(&quot;#commentator30&quot;).onclick=()=&gt;{commentator30=!commentator30;localStorage.setItem(&quot;tc_commentator_30_v1&quot;,commentator30?&quot;1&quot;:&quot;0&quot;);if(!commentator30&amp;&amp;voice30Audio){voice30Audio.pause();voice30Audio.currentTime=0}updateCommentator30Button()};updateCommentator30Button();
-function checkWin(){let alive=players.filter(p=&gt;p.lives&gt;0);if(players.length&gt;1&amp;&amp;alive.length===1){if(!winSent30){winSent30=true;try{parent.postMessage({type:&quot;tc30-win&quot;,player:alive[0].name},&quot;*&quot;)}catch(e){}}setTimeout(()=&gt;{$(&quot;#winner&quot;).textContent=alive[0].name+&quot; · &quot;+alive[0].lives+&quot; ♥&quot;;$(&quot;#win&quot;).classList.add(&quot;on&quot;);winSound()},450)}}
-function flash(x){let f=$(&quot;#fx&quot;);f.textContent=x;f.className=&quot;&quot;;void f.offsetWidth;f.className=&quot;fx&quot;}
-let ac;
-function audio(){try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();if(ac.state===&quot;suspended&quot;)ac.resume();return ac}catch(e){return null}}
-function sfx(f,d=.11,delay=0,type=&quot;triangle&quot;,vol=.13){if(!sound)return;let a=audio();if(!a)return;let o=a.createOscillator(),g=a.createGain(),t=a.currentTime+delay;o.type=type;o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(Math.max(45,f*.72),t+d);g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+d)}
-function hitSound(n){sfx(n&gt;=10?105:145,.22,0,&quot;sawtooth&quot;,.16);sfx(n&gt;=10?70:95,.28,.025,&quot;triangle&quot;,.11)}
-function healSound(){sfx(430,.12,0,&quot;sine&quot;,.11);sfx(650,.18,.07,&quot;sine&quot;,.09)}
-function deathSound(){sfx(120,.38,0,&quot;sawtooth&quot;,.18);sfx(74,.55,.10,&quot;triangle&quot;,.16);sfx(48,.7,.22,&quot;sine&quot;,.12)}
-function winSound(){[392,494,587,784].forEach((f,i)=&gt;sfx(f,.32,i*.11,&quot;triangle&quot;,.12))}
-document.addEventListener(&quot;pointerdown&quot;,()=&gt;audio(),{once:true});
-$(&quot;#sound&quot;).onclick=()=&gt;{sound=!sound;$(&quot;#sound&quot;).textContent=sound?&quot;🔊&quot;:&quot;🔇&quot;};
-$(&quot;#gameMusic&quot;).onclick=()=&gt;{try{parent.postMessage({type:&quot;tc-game-music-toggle&quot;},&quot;*&quot;)}catch(e){}};
-window.addEventListener(&quot;message&quot;,e=&gt;{const d=e.data||{};if(d.type===&quot;tc-music-state&quot;){$(&quot;#gameMusic&quot;).textContent=d.playing?&quot;🎵&quot;:&quot;🎵̸&quot;;}});
-$(&quot;#newGame&quot;).onclick=()=&gt;$(&quot;#confirm&quot;).classList.add(&quot;on&quot;);$(&quot;#endGame&quot;).onclick=()=&gt;$(&quot;#confirm&quot;).classList.add(&quot;on&quot;);$(&quot;#cancel&quot;).onclick=()=&gt;$(&quot;#confirm&quot;).classList.remove(&quot;on&quot;);$(&quot;#yes&quot;).onclick=()=&gt;{$(&quot;#confirm&quot;).classList.remove(&quot;on&quot;);$(&quot;#game&quot;).style.display=&quot;none&quot;;$(&quot;#setup&quot;).style.display=&quot;block&quot;;players=[];buildCount();buildNames(false)};
-$(&quot;#rematch&quot;).onclick=()=&gt;{let n=players.map(p=&gt;p.name);$(&quot;#win&quot;).classList.remove(&quot;on&quot;);start(n)};$(&quot;#newPlayers&quot;).onclick=()=&gt;{$(&quot;#win&quot;).classList.remove(&quot;on&quot;);$(&quot;#game&quot;).style.display=&quot;none&quot;;$(&quot;#setup&quot;).style.display=&quot;block&quot;;players=[];buildCount();buildNames(false)};
-buildCount();buildNames(false);applyLang();
-
-$(&quot;#backToMain30&quot;).onclick=()=&gt;{try{parent.postMessage({type:&quot;tc30-close&quot;},&quot;*&quot;)}catch(e){}};
-function showSavedPlayers30(list){
- const box=$(&quot;#savedPlayers30&quot;), dst=$(&quot;#savedPlayers30List&quot;);
- dst.innerHTML=&quot;&quot;;
- (list||[]).forEach(name=&gt;{
-   const b=document.createElement(&quot;button&quot;);
-   b.type=&quot;button&quot;; b.textContent=name;
-   b.style.cssText=&quot;min-height:36px;padding:0 10px;border:1px solid #79512b;border-radius:8px;background:#120805;color:#d9ba81;font:900 11px Arial&quot;;
-   b.onclick=()=&gt;{
-     const inputs=[...$$(&quot;#names input&quot;)];
-     const target=inputs.find(x=&gt;!x.value.trim()||/^Hráč \d+$|^Player \d+$/.test(x.value.trim()));
-     if(target)target.value=name;
-   };
-   dst.appendChild(b);
- });
- box.style.display=(list&amp;&amp;list.length)?&quot;block&quot;:&quot;none&quot;;
-}
-window.addEventListener(&quot;message&quot;,e=&gt;{
- const d=e.data||{};
- if(d.type===&quot;tc30-players&quot;)showSavedPlayers30(d.players||[]);
-});
-try{parent.postMessage({type:&quot;tc30-ready&quot;},&quot;*&quot;)}catch(e){}
-
-&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;"></iframe>
+<iframe id="game30Frame" src="game30.html" style="display:block;width:100%;height:100%;border:0;background:#050201" title="30"></iframe>
 </section>
-
-
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
@@ -1782,5 +1645,4 @@ if ("serviceWorker" in navigator) {
   });
 }
 </script>
-
 </body></html>
