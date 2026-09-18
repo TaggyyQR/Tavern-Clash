@@ -466,7 +466,7 @@ body{display:flex;justify-content:center}
 <!-- only text overlays needed for real CZ/EN translation -->
 <div class="liveLabel" id="diceLive">KOSTKY</div>
 <div class="liveLabel" id="cardsLive">KARTY</div>
-<div class="liveLabel" id="dartsLive">ŠIPKY<button id="openDarts1" class="gameBtn dartsGameBtn" type="button" style="display:block;width:calc(100% - 16px);margin:8px auto 12px;padding:14px 10px;border:1px solid #9a763f;border-radius:10px;background:linear-gradient(180deg,#3a2819,#1c130d);color:#f1d79d;font:700 18px Georgia,serif;cursor:pointer">1</button></div>
+<div class="liveLabel" id="dartsLive">ŠIPKY</div>
 <div class="menuLowerActions">
 <button id="playersMenuHit" type="button">HRÁČI</button>
 <button id="statsMenuHit" type="button">STATISTIKY</button>
@@ -1442,6 +1442,12 @@ $("#fsArtHit").onclick=async()=>{
  }catch(e){}
 };
 
+function openDarts1(){
+ const ov=$("#darts1Overlay");
+ if(!ov)return;
+ try{$("#music").pause()}catch(e){}
+ ov.style.display="block";
+}
 function openExactCategory(cat){
  const x=EXACT_MENU_TXT[lang];
  $("#menu").classList.remove("active");
@@ -1453,6 +1459,10 @@ function openExactCategory(cat){
    <button id="go30Exact" class="catGameExact"><strong>30</strong><span>${lang==="cs"?"Souboj o poslední život":"Last life standing"}</span></button>`;
   $("#go10kExact").onclick=()=>openLocked10K();
   $("#go30Exact").onclick=()=>openGame30();
+ }else if(cat==="darts"){
+  $("#catGamesExact").innerHTML=`
+   <button id="goDarts1Exact" class="catGameExact"><strong>1</strong><span>Master Out</span></button>`;
+  $("#goDarts1Exact").onclick=()=>openDarts1();
  }else{
   $("#catGamesExact").innerHTML=`<div class="catEmptyExact">${x.empty}</div>`;
  }
