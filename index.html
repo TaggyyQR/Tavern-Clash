@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#080402">
-<title>TAVERN CLASH</title>
+<title>TAVERN CLASH v0.2</title>
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;min-height:100%;background:#050302;color:#f3d59a;font-family:Georgia,"Times New Roman",serif}
@@ -819,7 +819,9 @@ button{cursor:pointer}
 
   &lt;div class=&quot;shell&quot;&gt;
     &lt;div class=&quot;topbar&quot;&gt;&lt;button id=&quot;backToApp&quot; class=&quot;iconbtn&quot; type=&quot;button&quot; aria-label=&quot;Menu&quot;&gt;←&lt;/button&gt;
-      &lt;button id=&quot;sound&quot; class=&quot;iconbtn&quot; type=&quot;button&quot; aria-label=&quot;Zvuky&quot;&gt;🔊&lt;/button&gt;
+      &lt;button id=&quot;sound&quot; class=&quot;iconbtn&quot; type=&quot;button&quot; aria-label=&quot;Efekty&quot; title=&quot;Efekty&quot;&gt;🔊&lt;/button&gt;
+      &lt;button id=&quot;gameMusic&quot; class=&quot;iconbtn&quot; type=&quot;button&quot; aria-label=&quot;Hudba&quot; title=&quot;Hudba&quot;&gt;🎵&lt;/button&gt;
+      &lt;button id=&quot;commentator&quot; class=&quot;iconbtn&quot; type=&quot;button&quot; aria-label=&quot;Komentátor&quot; title=&quot;Komentátor&quot;&gt;K&lt;/button&gt;
       &lt;div class=&quot;brand&quot;&gt;&lt;strong&gt;10K BATTLE&lt;/strong&gt;&lt;small&gt;TAVERN CLASH&lt;/small&gt;&lt;/div&gt;
       &lt;button id=&quot;lang&quot; class=&quot;iconbtn&quot; type=&quot;button&quot;&gt;CZ&lt;/button&gt;
     &lt;/div&gt;
@@ -923,7 +925,7 @@ const TXT={
   nothing:&quot;NOTHING&quot;,soundOn:&quot;Sound on&quot;,soundOff:&quot;Sound off&quot;
  }
 };
-let lang=&quot;cs&quot;, playerCount=2, players=[], active=0, turn=0, history=[], soundOn=true, confirmAction=null, winRecorded=false;
+let lang=&quot;cs&quot;, playerCount=2, players=[], active=0, turn=0, history=[], soundOn=true, commentatorOn=localStorage.getItem(&quot;tc_commentator_10k&quot;)!==&quot;off&quot;, commentatorAudio=null, confirmAction=null, winRecorded=false;
 
 function applyLang(){
  const t=TXT[lang];
@@ -1002,10 +1004,10 @@ $(&quot;#zero&quot;).addEventListener(&quot;click&quot;,()=&gt;{
  snap(); const p=players[active]; p.nic++; turn=0;
  if(p.nic&gt;=3){
   p.score=0;p.nic=0;$(&quot;#event&quot;).textContent=TXT[lang].third; badFx(&quot;RESET 0&quot;,true); sfxBad(true);
-  showDDEvent(&quot;curse&quot;);
+  showDDEvent(&quot;curse&quot;);playComment(&quot;curse&quot;);
  }else{
   $(&quot;#event&quot;).textContent=&quot;&quot;;badFx(TXT[lang].nothing,false);sfxBad(false);
-  showDDEvent(&quot;nothing&quot;);
+  showDDEvent(&quot;nothing&quot;);playComment(p.nic===2?&quot;nic2&quot;:&quot;nic&quot;);
  }
  active=(active+1)%players.length; render();
 });
@@ -1016,12 +1018,13 @@ $(&quot;#next&quot;).addEventListener(&quot;click&quot;,()=&gt;{
  commitFx(&quot;+&quot;+committed);sfxCommit();
  const special=eventForPoints(committed);
  if(p.score&gt;=10000){
-  render();
+  render();playComment(&quot;win&quot;);
   if(special){showDDEvent(special,committed);setTimeout(()=&gt;showWin(p),2100)}
   else showWin(p);
   return;
  }
  active=(active+1)%players.length;render();
+ playComment(commentForScore(committed));
  if(special)showDDEvent(special,committed);
 });
 
@@ -1162,9 +1165,34 @@ function sfxBad(third){tone(third?105:145,third?.28:.18,&quot;sawtooth&quot;,.02
 function sfxUndo(){tone(260,.07,&quot;sine&quot;,.02);tone(190,.09,&quot;sine&quot;,.018,.05)}
 function sfxStart(){tone(294,.08,&quot;triangle&quot;,.025);tone(392,.1,&quot;triangle&quot;,.03,.08);tone(523,.13,&quot;triangle&quot;,.03,.16)}
 function sfxWin(){[392,494,587,784,988].forEach((f,i)=&gt;tone(f,.35,&quot;triangle&quot;,.034,i*.09))}
+const COMMENTARY={
+ good:[&quot;10k_good_01.mp3&quot;,&quot;10k_good_02.mp3&quot;,&quot;10k_good_03.mp3&quot;],
+ 1000:[&quot;10k_1000_01.mp3&quot;,&quot;10k_1000_02.mp3&quot;,&quot;10k_1000_03.mp3&quot;],
+ 2000:[&quot;10k_2000_01.mp3&quot;,&quot;10k_2000_02.mp3&quot;,&quot;10k_2000_03.mp3&quot;],
+ 3000:[&quot;10k_3000_01.mp3&quot;,&quot;10k_3000_02.mp3&quot;,&quot;10k_3000_03.mp3&quot;],
+ nic:[&quot;10k_nic_01.mp3&quot;,&quot;10k_nic_02.mp3&quot;,&quot;10k_nic_03.mp3&quot;],
+ nic2:[&quot;10k_nic2_01.mp3&quot;,&quot;10k_nic2_02.mp3&quot;,&quot;10k_nic2_03.mp3&quot;],
+ curse:[&quot;10k_curse_01.mp3&quot;,&quot;10k_curse_02.mp3&quot;,&quot;10k_curse_03.mp3&quot;],
+ win:[&quot;10k_win_01.mp3&quot;,&quot;10k_win_02.mp3&quot;,&quot;10k_win_03.mp3&quot;]
+};
+let lastComment={};
+function playComment(kind){
+ if(!commentatorOn||!COMMENTARY[kind])return;
+ const arr=COMMENTARY[kind];let i=Math.floor(Math.random()*arr.length);
+ if(arr.length&gt;1&amp;&amp;i===lastComment[kind])i=(i+1)%arr.length;lastComment[kind]=i;
+ try{if(commentatorAudio){commentatorAudio.pause();commentatorAudio.currentTime=0}commentatorAudio=new Audio(&quot;assets/audio/10k/&quot;+arr[i]);commentatorAudio.volume=.95;commentatorAudio.play().catch(()=&gt;{})}catch(e){}
+}
+function commentForScore(v){if(v&gt;=3000)return &quot;3000&quot;;if(v&gt;=2000)return &quot;2000&quot;;if(v&gt;=1000)return &quot;1000&quot;;return &quot;good&quot;}
+function syncCommentatorButton(){$(&quot;#commentator&quot;).textContent=commentatorOn?&quot;K&quot;:&quot;K×&quot;;$(&quot;#commentator&quot;).style.opacity=commentatorOn?&quot;1&quot;:&quot;.5&quot;}
 $(&quot;#sound&quot;).addEventListener(&quot;click&quot;,()=&gt;{
  soundOn=!soundOn;$(&quot;#sound&quot;).textContent=soundOn?&quot;🔊&quot;:&quot;🔇&quot;;
 });
+$(&quot;#gameMusic&quot;).addEventListener(&quot;click&quot;,()=&gt;{
+ try{parent.postMessage({type:&quot;tc-game-music-toggle&quot;},&quot;*&quot;)}catch(e){}
+});
+$(&quot;#commentator&quot;).addEventListener(&quot;click&quot;,()=&gt;{commentatorOn=!commentatorOn;localStorage.setItem(&quot;tc_commentator_10k&quot;,commentatorOn?&quot;on&quot;:&quot;off&quot;);if(!commentatorOn&amp;&amp;commentatorAudio){commentatorAudio.pause();commentatorAudio.currentTime=0}syncCommentatorButton();});
+syncCommentatorButton();
+window.addEventListener(&quot;message&quot;,e=&gt;{const d=e.data||{};if(d.type===&quot;tc-music-state&quot;){$(&quot;#gameMusic&quot;).textContent=d.playing?&quot;🎵&quot;:&quot;🎵̸&quot;;}});
 
 /* VISUAL FX */
 function animateFx(text,kind){const e=$(&quot;#fx&quot;);e.textContent=text;e.className=&quot;fx&quot;;void e.offsetWidth;e.classList.add(kind)}
@@ -1494,6 +1522,12 @@ function tcWinSfx(){
 
 let musicWanted=localStorage.getItem("tc_music")!=="off";
 async function playMusic(){if(!musicWanted)return;try{await music.play()}catch(e){}}
+function pauseMenuMusic(){try{music.pause()}catch(e){}}
+function sendMusicState(target){try{target.postMessage({type:"tc-music-state",playing:!music.paused},"*")}catch(e){}}
+async function toggleGameMusic(target){
+ if(music.paused){try{await music.play()}catch(e){}}else{music.pause()}
+ sendMusicState(target);
+}
 document.addEventListener("pointerdown",playMusic,{once:true});
 function toast(t){clearTimeout(timer);$("#toast").textContent=t;$("#toast").classList.add("show");timer=setTimeout(()=>$("#toast").classList.remove("show"),1200)}
 async function toggleMusic(e){
@@ -1545,7 +1579,9 @@ buildCount();buildNames(false);applyLang();syncExactMenu();renderPlayers();rende
 
 function openLocked10K(){
  const host=$("#game10kHost");
+ pauseMenuMusic();
  host.classList.add("active");
+ const f=document.getElementById("game10kFrame");setTimeout(()=>sendMusicState(f.contentWindow),80);
 }
 document.addEventListener("click",e=>{
  const btn=e.target.closest("#go10kExact,#go10k,.game-entry,.catGameExact,.catGame,.gameEntry");
@@ -1562,8 +1598,10 @@ window.addEventListener("message",e=>{
  const d=e.data||{};
  if(d.type==="tc-close-10k"){
    $("#game10kHost").classList.remove("active");
+   if(musicWanted)playMusic();
    renderStats();
  }
+ if(d.type==="tc-game-music-toggle"){toggleGameMusic(e.source);}
  if(d.type==="tc-stats-updated"){
    renderStats();
  }
@@ -1573,7 +1611,9 @@ window.addEventListener("message",e=>{
 function openGame30(){
  const host=document.getElementById("game30Host");
  const frame=document.getElementById("game30Frame");
+ pauseMenuMusic();
  host.style.display="block";
+ setTimeout(()=>sendMusicState(frame.contentWindow),80);
  let list=[];
  try{
    const raw=JSON.parse(localStorage.getItem("tavern_clash_players_v1")||"[]");
@@ -1593,8 +1633,10 @@ window.addEventListener("message",e=>{
  }
  if(d.type==="tc30-close"){
    document.getElementById("game30Host").style.display="none";
+   if(musicWanted)playMusic();
    if(typeof renderStats==="function")renderStats();
  }
+
  if(d.type==="tc30-win"&&d.player){
    if(typeof recordWin==="function"){recordWin(d.player,"thirty");}
    else{
@@ -1649,7 +1691,7 @@ button,input{font:inherit}button{cursor:pointer}
 @media(max-width:370px){.avatar{width:48px;height:48px}.life{font-size:22px}.pad button{min-height:44px}}
 &lt;/style&gt;&lt;/head&gt;
 &lt;body&gt;&lt;main id=&quot;app&quot;&gt;&lt;div class=&quot;shell&quot;&gt;
-&lt;div class=&quot;top&quot;&gt;&lt;button class=&quot;icon&quot; id=&quot;sound&quot;&gt;🔊&lt;/button&gt;&lt;div class=&quot;brand&quot;&gt;&lt;b&gt;30&lt;/b&gt;&lt;small&gt;TAVERN CLASH · DICE&lt;/small&gt;&lt;/div&gt;&lt;button class=&quot;icon&quot; id=&quot;lang&quot;&gt;CZ&lt;/button&gt;&lt;/div&gt;
+&lt;div class=&quot;top&quot;&gt;&lt;button class=&quot;icon&quot; id=&quot;sound&quot; title=&quot;Efekty&quot;&gt;🔊&lt;/button&gt;&lt;button class=&quot;icon&quot; id=&quot;gameMusic&quot; title=&quot;Hudba&quot;&gt;🎵&lt;/button&gt;&lt;div class=&quot;brand&quot;&gt;&lt;b&gt;30&lt;/b&gt;&lt;small&gt;TAVERN CLASH · DICE&lt;/small&gt;&lt;/div&gt;&lt;button class=&quot;icon&quot; id=&quot;lang&quot;&gt;CZ&lt;/button&gt;&lt;/div&gt;
 &lt;section id=&quot;setup&quot; class=&quot;panel&quot;&gt;&lt;h1&gt;30&lt;/h1&gt;&lt;p id=&quot;setupText&quot;&gt;Vyber počet hráčů a zadej jejich jména.&lt;/p&gt;&lt;div id=&quot;count&quot; class=&quot;count&quot;&gt;&lt;/div&gt;&lt;div id=&quot;savedPlayers30&quot; style=&quot;max-width:450px;margin:10px auto 8px;display:none&quot;&gt;
       &lt;div style=&quot;font:900 10px Arial;color:#a98c65;margin-bottom:6px&quot;&gt;ULOŽENÍ HRÁČI&lt;/div&gt;
       &lt;div id=&quot;savedPlayers30List&quot; style=&quot;display:flex;gap:6px;flex-wrap:wrap&quot;&gt;&lt;/div&gt;
@@ -1691,6 +1733,8 @@ function deathSound(){sfx(120,.38,0,&quot;sawtooth&quot;,.18);sfx(74,.55,.10,&qu
 function winSound(){[392,494,587,784].forEach((f,i)=&gt;sfx(f,.32,i*.11,&quot;triangle&quot;,.12))}
 document.addEventListener(&quot;pointerdown&quot;,()=&gt;audio(),{once:true});
 $(&quot;#sound&quot;).onclick=()=&gt;{sound=!sound;$(&quot;#sound&quot;).textContent=sound?&quot;🔊&quot;:&quot;🔇&quot;};
+$(&quot;#gameMusic&quot;).onclick=()=&gt;{try{parent.postMessage({type:&quot;tc-game-music-toggle&quot;},&quot;*&quot;)}catch(e){}};
+window.addEventListener(&quot;message&quot;,e=&gt;{const d=e.data||{};if(d.type===&quot;tc-music-state&quot;){$(&quot;#gameMusic&quot;).textContent=d.playing?&quot;🎵&quot;:&quot;🎵̸&quot;;}});
 $(&quot;#newGame&quot;).onclick=()=&gt;$(&quot;#confirm&quot;).classList.add(&quot;on&quot;);$(&quot;#endGame&quot;).onclick=()=&gt;$(&quot;#confirm&quot;).classList.add(&quot;on&quot;);$(&quot;#cancel&quot;).onclick=()=&gt;$(&quot;#confirm&quot;).classList.remove(&quot;on&quot;);$(&quot;#yes&quot;).onclick=()=&gt;{$(&quot;#confirm&quot;).classList.remove(&quot;on&quot;);$(&quot;#game&quot;).style.display=&quot;none&quot;;$(&quot;#setup&quot;).style.display=&quot;block&quot;;players=[];buildCount();buildNames(false)};
 $(&quot;#rematch&quot;).onclick=()=&gt;{let n=players.map(p=&gt;p.name);$(&quot;#win&quot;).classList.remove(&quot;on&quot;);start(n)};$(&quot;#newPlayers&quot;).onclick=()=&gt;{$(&quot;#win&quot;).classList.remove(&quot;on&quot;);$(&quot;#game&quot;).style.display=&quot;none&quot;;$(&quot;#setup&quot;).style.display=&quot;block&quot;;players=[];buildCount();buildNames(false)};
 buildCount();buildNames(false);applyLang();
